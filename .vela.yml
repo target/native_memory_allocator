@@ -27,8 +27,9 @@ steps:
     template:
       name: build-release
       vars:
-        env:
-          JAVA_TOOL_OPTIONS: -Xmx3000M
-        build_command: java -version; ./gradlew clean build --stacktrace --info || cat /vela/src/git.target.com/TargetOSS/native_memory_allocator/build/reports/tests/test/index.html
+        build_command: ./gradlew clean build --stacktrace
         build_release_image: library/openjdk:11-jdk
+  - name: slack
+    template:
+      name: slack
 
