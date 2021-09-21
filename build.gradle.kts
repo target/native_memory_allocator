@@ -28,6 +28,12 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.5")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
     implementation("org.objenesis:objenesis:3.2")
+
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
+    testImplementation("org.spekframework.spek2:spek-runner-junit5:2.0.17")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation(platform("org.junit:junit-bom:5.8.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 tasks.withType<KotlinCompile> {

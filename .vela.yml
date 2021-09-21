@@ -1,0 +1,31 @@
+version: "1"
+
+secrets:
+  - name: slack_webhook
+    key: availability/SLACK_WEBHOOK_URL
+    engine: native
+    type: org
+  - name: artifactory_username
+    key: availability/ARTIFACTORY_USERNAME
+    engine: native
+    type: org
+  - name: artifactory_password
+    key: availability/ARTIFACTORY_PASSWORD
+    engine: native
+    type: org
+
+templates:
+  - name: build
+    source: git.target.com/availability/vela-templates/basic-application-build-template.yml@master
+    type: github
+
+steps:
+  - name: application-build
+    template:
+      name: build
+      vars:
+        application_build_image: library/openjdk:11-jdk
+        publish_jar: true
+        source_jar: build/libs/${VELA_REPO_NAME%-v*}-${VELA_BUILD_TAG##v}.jar
+        upload_jar: ${VELA_REPO_NAME%-v*}-${VELA_BUILD_TAG##v}.jar
+        upload_jar_path: com/target/availability/${VELA_REPO_NAME%-v*}/${VELA_BUILD_TAG##v}/
