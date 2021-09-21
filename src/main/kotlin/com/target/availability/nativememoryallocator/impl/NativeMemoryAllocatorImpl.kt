@@ -1,0 +1,164 @@
+package com.target.availability.nativememoryallocator.impl
+
+import com.target.availability.nativememoryallocator.NativeMemoryAllocator
+import com.target.availability.nativememoryallocator.NativeMemoryAllocatorMetadata
+import com.target.availability.nativememoryallocator.NativeMemoryBuffer
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
+// All fields in this class are immutable except freeList.  freeList manages its own synchronization.
+class NativeMemoryAllocatorImpl(
+    override val pageSizeBytes: Int,
+    override val nativeMemorySizeBytes: Long,
+    zeroNativeMemoryOnStartup: Boolean,
+) : NativeMemoryAllocator {
+
+    private val baseNativeMemoryPointer: Long
+
+    private val freeList: FreeList
+
+    init {
+        logger.info { "begin init pageSizeBytes = $pageSizeBytes nativeMemorySizeBytes = $nativeMemorySizeBytes" }
+
+        if ((nativeMemorySizeBytes % pageSizeBytes) != 0L) {
+            throw IllegalStateException("nativeMemorySizeBytes = $nativeMemorySizeBytes is not evenly divisible by pageSizeBytes = $pageSizeBytes")
+        }
+
+        logger.info { "allocating nativeMemorySizeBytes = $nativeMemorySizeBytes" }
+        baseNativeMemoryPointer = UnsafeContainer.unsafe.allocateMemory(nativeMemorySizeBytes)
+        logger.info { "baseNativeMemoryPointer = 0x${baseNativeMemoryPointer.toString(radix = 16)}" }
+
+        if (zeroNativeMemoryOnStartup) {
+            logger.info { "begin unsafe.setMemory" }
+            UnsafeContainer.unsafe.setMemory(baseNativeMemoryPointer, nativeMemorySizeBytes, 0)
+            logger.info { "end unsafe.setMemory" }
+        }
+
+        val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+
+        freeList = FreeListImpl(
+            baseNativeMemoryPointer = baseNativeMemoryPointer,
+            pageSizeBytes = pageSizeBytes,
+            totalNumPages = totalNumPages,
+        )
+    }
+
+    // for unit test only
+    fun baseNativeMemoryPointer(): Long = baseNativeMemoryPointer
+
+    override fun numFreePages(): Int = freeList.numFreePages()
+
+    override fun totalNumPages(): Int = freeList.totalNumPages
+
+    override fun numUsedPages(): Int = freeList.numUsedPages()
+
+    override fun nativeMemoryAllocatorMetadata(): NativeMemoryAllocatorMetadata =
+        synchronized(freeList) {
+            NativeMemoryAllocatorMetadata(
+                pageSizeBytes = pageSizeBytes,
+                nextFreePageIndex = freeList.nextFreePageIndex(),
+                numFreePages = freeList.numFreePages(),
+                totalNumPages = freeList.totalNumPages,
+                numUsedPages = freeList.numUsedPages(),
+                nativeMemorySizeBytes = nativeMemorySizeBytes,
+            )
+        }
+
+    private fun computePagesNeeded(capacityBytes: Int): Int =
+        if ((capacityBytes % pageSizeBytes) == 0) {
+            capacityBytes / pageSizeBytes
+        } else {
+            (capacityBytes / pageSizeBytes) + 1
+        }
+
+    override fun allocateNativeMemoryBuffer(capacityBytes: Int): NativeMemoryBuffer {
+        val pagesNeeded = computePagesNeeded(capacityBytes = capacityBytes)
+
+        val pages = freeList.allocatePages(numPagesToAllocate = pagesNeeded)
+
+        return NativeMemoryBufferImpl(
+            pages = pages,
+            capacityBytes = capacityBytes,
+            pageSizeBytes = pageSizeBytes,
+            freed = false,
+        )
+    }
+
+    override fun freeNativeMemoryBuffer(buffer: NativeMemoryBuffer) {
+        val bufferImpl = buffer as NativeMemoryBufferImpl
+        if (bufferImpl.freed) {
+            throw IllegalStateException("attempt to free already freed buffer $buffer")
+        }
+
+        freeList.freePages(bufferImpl.pages)
+
+        bufferImpl.capacityBytes = 0
+        bufferImpl.freed = true
+        bufferImpl.pages.clear()
+        bufferImpl.pages.trimToSize()
+    }
+
+    private fun shrinkNativeMemoryBuffer(
+        bufferImpl: NativeMemoryBufferImpl,
+        newCapacityBytes: Int,
+        newPagesNeeded: Int,
+    ) {
+        val numPagesToFree = bufferImpl.pages.size - newPagesNeeded
+
+        val pagesToFree = (0 until numPagesToFree).map {
+            bufferImpl.pages.removeLast()
+        }
+        freeList.freePages(pages = pagesToFree)
+        bufferImpl.pages.trimToSize()
+
+        bufferImpl.capacityBytes = newCapacityBytes
+    }
+
+    private fun expandNativeMemoryBuffer(
+        bufferImpl: NativeMemoryBufferImpl,
+        newCapacityBytes: Int,
+        newPagesNeeded: Int,
+    ) {
+        val pagesToAllocate = newPagesNeeded - bufferImpl.pages.size
+
+        val newPages = freeList.allocatePages(numPagesToAllocate = pagesToAllocate)
+
+        bufferImpl.pages.addAll(newPages)
+        bufferImpl.pages.trimToSize()
+
+        bufferImpl.capacityBytes = newCapacityBytes
+    }
+
+    override fun resizeNativeMemoryBuffer(buffer: NativeMemoryBuffer, newCapacityBytes: Int) {
+        val bufferImpl = buffer as NativeMemoryBufferImpl
+        if (bufferImpl.freed) {
+            throw IllegalStateException("attempt to resize already freed buffer $buffer")
+        }
+
+        if (bufferImpl.capacityBytes == newCapacityBytes) {
+            return
+        }
+
+        val newPagesNeeded = computePagesNeeded(newCapacityBytes)
+        if (newPagesNeeded == bufferImpl.pages.size) {
+            bufferImpl.capacityBytes = newCapacityBytes
+            return
+        }
+
+        if (newPagesNeeded < bufferImpl.pages.size) {
+            shrinkNativeMemoryBuffer(
+                bufferImpl = bufferImpl,
+                newCapacityBytes = newCapacityBytes,
+                newPagesNeeded = newPagesNeeded,
+            )
+        } else {
+            expandNativeMemoryBuffer(
+                bufferImpl = bufferImpl,
+                newCapacityBytes = newCapacityBytes,
+                newPagesNeeded = newPagesNeeded,
+            )
+        }
+    }
+
+}
