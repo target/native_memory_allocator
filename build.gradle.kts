@@ -20,7 +20,6 @@ repositories {
     maven { setUrl("https://binrepo.target.com/artifactory/jcenter") }
     maven { setUrl("https://binrepo.target.com/artifactory/gradle") }
     maven { setUrl("https://binrepo.target.com/artifactory/libs-release") }
-    maven { setUrl("https://binrepo.target.com/artifactory/availability") }
     maven { setUrl("https://binrepo.target.com/artifactory/esv-deploy") }
 }
 
