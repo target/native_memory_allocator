@@ -27,8 +27,8 @@ steps:
     template:
       name: build-release
       environment:
-        - JAVA_TOOL_OPTIONS=-Xmx3000M
+        JAVA_TOOL_OPTIONS: -Xmx3000M
       vars:
-        build_command: ./gradlew clean build --stacktrace --info
+        build_command: ./gradlew clean build --stacktrace --info || cat /vela/src/git.target.com/TargetOSS/native_memory_allocator/build/reports/tests/test/index.html
         buildReleaseImage: library/openjdk:11-jdk
 
