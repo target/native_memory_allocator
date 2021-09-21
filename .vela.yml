@@ -26,9 +26,9 @@ steps:
   - name: build-release
     template:
       name: build-release
+      environment:
+        - JAVA_TOOL_OPTIONS=-Xmx3000M
       vars:
         build_command: ./gradlew clean build --stacktrace --info
         buildReleaseImage: library/openjdk:11-jdk
-  - name: slack
-    template:
-      name: slack
+
