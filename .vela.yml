@@ -1,31 +1,34 @@
 version: "1"
 
+templates:
+  - name: slack
+    source: git.target.com/TargetOSS/vela-templates/slack/slack.yml@master
+    type: github
+  - name: build-release
+    source: git.target.com/TargetOSS/vela-templates/libraries/build_release_template.yml@master
+    type: github
+
 secrets:
-  - name: slack_webhook
-    key: availability/SLACK_WEBHOOK_URL
-    engine: native
-    type: org
   - name: artifactory_username
-    key: availability/ARTIFACTORY_USERNAME
+    key: TargetOSS/artifactory_username
     engine: native
     type: org
   - name: artifactory_password
-    key: availability/ARTIFACTORY_PASSWORD
+    key: TargetOSS/artifactory_password
+    engine: native
+    type: org
+  - name: slack_webhook
+    key: TargetOSS/slack_webhook
     engine: native
     type: org
 
-templates:
-  - name: build
-    source: git.target.com/availability/vela-templates/basic-application-build-template.yml@master
-    type: github
-
 steps:
-  - name: application-build
+  - name: build-release
     template:
-      name: build
+      name: build-release
       vars:
-        application_build_image: library/openjdk:11-jdk
-        publish_jar: true
-        source_jar: build/libs/${VELA_REPO_NAME%-v*}-${VELA_BUILD_TAG##v}.jar
-        upload_jar: ${VELA_REPO_NAME%-v*}-${VELA_BUILD_TAG##v}.jar
-        upload_jar_path: com/target/availability/${VELA_REPO_NAME%-v*}/${VELA_BUILD_TAG##v}/
+        build_command: ./gradlew --build-cache clean build --stacktrace
+        buildReleaseImage: library/java:11
+  - name: slack
+    template:
+      name: slack
