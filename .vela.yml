@@ -27,7 +27,7 @@ steps:
     template:
       name: build-release
       vars:
-        build_command: ./gradlew --build-cache clean build --stacktrace
+        build_command: ./gradlew clean build --stacktrace
         buildReleaseImage: library/openjdk:11-jdk
   - name: slack
     template:
