@@ -1,4 +1,4 @@
-package com.target.availability.nativememoryallocator
+package com.target.oss.nativememoryallocator
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

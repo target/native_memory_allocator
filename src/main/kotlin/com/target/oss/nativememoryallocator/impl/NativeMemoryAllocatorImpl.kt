@@ -1,8 +1,8 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
-import com.target.availability.nativememoryallocator.NativeMemoryAllocator
-import com.target.availability.nativememoryallocator.NativeMemoryAllocatorMetadata
-import com.target.availability.nativememoryallocator.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.NativeMemoryAllocator
+import com.target.oss.nativememoryallocator.NativeMemoryAllocatorMetadata
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

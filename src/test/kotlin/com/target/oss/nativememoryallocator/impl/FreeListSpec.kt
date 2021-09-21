@@ -1,4 +1,4 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
 import io.mockk.clearAllMocks
 import org.junit.jupiter.api.Assertions.assertEquals

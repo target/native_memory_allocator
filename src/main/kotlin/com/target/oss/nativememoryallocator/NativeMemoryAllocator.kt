@@ -1,4 +1,4 @@
-package com.target.availability.nativememoryallocator
+package com.target.oss.nativememoryallocator
 
 // A NativeMemoryAllocator is an allocator for NativeMemoryBuffers.
 // NativeMemoryAllocator has methods similar to malloc, realloc, and free in C.

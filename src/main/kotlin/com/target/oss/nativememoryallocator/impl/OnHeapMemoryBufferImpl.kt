@@ -1,6 +1,6 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
-import com.target.availability.nativememoryallocator.OnHeapMemoryBuffer
+import com.target.oss.nativememoryallocator.OnHeapMemoryBuffer
 import java.nio.ByteBuffer
 
 class OnHeapMemoryBufferImpl(

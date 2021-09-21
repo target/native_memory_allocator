@@ -1,7 +1,7 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
-import com.target.availability.nativememoryallocator.NativeMemoryBuffer
-import com.target.availability.nativememoryallocator.OnHeapMemoryBuffer
+import com.target.oss.nativememoryallocator.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.OnHeapMemoryBuffer
 
 class NativeMemoryBufferImpl(
     override val pageSizeBytes: Int,

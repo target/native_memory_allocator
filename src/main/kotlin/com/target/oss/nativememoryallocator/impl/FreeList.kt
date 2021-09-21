@@ -1,4 +1,4 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
 // A FreeList is a list of MemoryPages that are available for allocation.
 // Pages are allocated by removing from the left side of the array,

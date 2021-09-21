@@ -1,4 +1,4 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
 // A NativeMemoryPage is a fixed-size native memory page, with methods to read and write bytes at a certain offset.
 data class NativeMemoryPage(

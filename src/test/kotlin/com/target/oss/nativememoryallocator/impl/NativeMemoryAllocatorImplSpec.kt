@@ -1,6 +1,6 @@
-package com.target.availability.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.impl
 
-import com.target.availability.nativememoryallocator.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.NativeMemoryBuffer
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
