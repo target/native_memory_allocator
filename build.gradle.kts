@@ -2,12 +2,26 @@ import groovy.lang.GroovyObject
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+        maven { url = uri("https://binrepo.target.com/artifactory/TargetOSS") }
+        maven { url = uri("https://plugins.gradle.org/m2/") }
+    }
+    dependencies {
+        classpath("com.netflix.nebula:nebula-release-plugin:16.0.0")
+    }
+}
 
 plugins {
     kotlin("jvm") version "1.5.31"
     id("com.jfrog.artifactory") version "4.24.20"
     `maven-publish`
 }
+
+apply(plugin = "nebula.release")
 
 group = "com.target"
 java.sourceCompatibility = JavaVersion.VERSION_11
