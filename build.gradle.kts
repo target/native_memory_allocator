@@ -23,7 +23,7 @@ plugins {
 
 apply(plugin = "nebula.release")
 
-group = "com.target"
+group = "com.target.oss"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
