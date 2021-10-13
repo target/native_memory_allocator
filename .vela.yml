@@ -28,5 +28,5 @@ steps:
       name: build-release
       vars:
         build_command: ./gradlew clean build --stacktrace
+        publish_command: ./gradlew -Prelease.useLastTag=true -Prelease.disableGitChecks=true clean build artifactoryPublish -PartifactoryPublishRepositoryUsername=$ARTIFACTORY_USERNAME -PartifactoryPublishRepositoryPassword=$ARTIFACTORY_PASSWORD --stacktrace
         build_release_image: library/openjdk:11-jdk
-
