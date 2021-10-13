@@ -1,7 +1,12 @@
+import groovy.lang.GroovyObject
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
+
 
 plugins {
     kotlin("jvm") version "1.5.31"
+    id("com.jfrog.artifactory") version "4.24.20"
+    `maven-publish`
 }
 
 group = "com.target"
@@ -44,4 +49,40 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+java {
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        mavenLocal()
+    }
+    publications {
+        register("mavenJava", MavenPublication::class) {
+            from(components["java"])
+            artifact(tasks.findByName("sourcesJar"))
+        }
+    }
+}
+
+artifactory {
+    setContextUrl("https://binrepo.target.com/artifactory")
+
+    publish(delegateClosureOf<PublisherConfig> {
+        repository(delegateClosureOf<GroovyObject> {
+            val targetRepoKey = "TargetOSS"
+            val username = project.findProperty("artifactoryPublishRepositoryUsername") ?: ""
+            val password = project.findProperty("artifactoryPublishRepositoryPassword") ?: ""
+            setProperty("repoKey", targetRepoKey)
+            setProperty("username", username)
+            setProperty("password", password)
+            setProperty("maven", true)
+        })
+        defaults(delegateClosureOf<GroovyObject> {
+            invokeMethod("publications", "mavenJava")
+        })
+    })
+
 }
