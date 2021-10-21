@@ -61,7 +61,8 @@ class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
         return result
     }
 
-    private val threadLocalHeapReadBuffer =
+    // not private for unit test
+    val threadLocalHeapReadBuffer =
         if (useThreadLocalOnHeapReadBuffer) {
             ThreadLocal.withInitial {
                 OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(
