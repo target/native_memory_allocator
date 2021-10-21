@@ -34,6 +34,32 @@ class NativeMemoryCacheImplTest : Spek({
             }
             clearAllMocks()
         }
+        Scenario("test put of null value") {
+            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var nativeMemoryAllocator: NativeMemoryAllocator
+            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
+            lateinit var putResult: NativeMemoryCache.PutResult
+
+            When("test single put") {
+                testValueObjectNativeMemoryCacheSerializer = mockk()
+                nativeMemoryAllocator = mockk()
+
+                nativeMemoryCache = NativeMemoryCacheImpl(
+                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                    nativeMemoryAllocator = nativeMemoryAllocator,
+                    useThreadLocalOnHeapReadBuffer = true,
+                    threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                )
+
+                putResult = nativeMemoryCache.put(key = 1, value = null)
+            }
+            Then("state is correct") {
+                assertEquals(NativeMemoryCache.PutResult.NO_CHANGE, putResult)
+                assertTrue(nativeMemoryCache.entries.isEmpty())
+                assertEquals(0, nativeMemoryCache.size)
+            }
+            clearAllMocks()
+        }
         Scenario("test put") {
             lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
