@@ -78,19 +78,21 @@ class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
 
         cacheMap.compute(key) { _, nearCacheBuffer ->
 
-            if (nearCacheBuffer != null) {
-
-                // copy nearCacheBuffer to readBuffer
-                val readBuffer = if (threadLocalHeapReadBuffer != null) {
-                    threadLocalHeapReadBuffer.get()
+            onHeapReadBuffer =
+                if (nearCacheBuffer == null) {
+                    null
                 } else {
-                    OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = nearCacheBuffer.capacityBytes)
+                    // copy nearCacheBuffer to readBuffer
+                    val readBuffer = if (threadLocalHeapReadBuffer != null) {
+                        threadLocalHeapReadBuffer.get()
+                    } else {
+                        OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = nearCacheBuffer.capacityBytes)
+                    }
+
+                    nearCacheBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer = readBuffer)
+
+                    readBuffer
                 }
-
-                nearCacheBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer = readBuffer)
-
-                onHeapReadBuffer = readBuffer
-            }
 
             nearCacheBuffer
         }
