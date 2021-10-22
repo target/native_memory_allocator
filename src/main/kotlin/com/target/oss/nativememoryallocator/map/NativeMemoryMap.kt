@@ -1,7 +1,10 @@
-package com.target.oss.nativememoryallocator
+package com.target.oss.nativememoryallocator.map
 
-// NativeMemoryCacheSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryCache.
-interface NativeMemoryCacheSerializer<VALUE_TYPE> {
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
+
+// NativeMemoryMapSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryMap.
+interface NativeMemoryMapSerializer<VALUE_TYPE> {
 
     // serialize value to a ByteArray
     fun serializeToByteArray(value: VALUE_TYPE): ByteArray
@@ -11,12 +14,12 @@ interface NativeMemoryCacheSerializer<VALUE_TYPE> {
 
 }
 
-// NativeMemoryCache is mapping of keys to values backed by a ConcurrentHashMap.
-// NativeMemoryCache uses NativeMemoryAllocator to allocate, resize, and free NativeMemoryBuffers.
+// NativeMemoryMap is mapping of keys to values backed by a ConcurrentHashMap.
+// NativeMemoryMap uses NativeMemoryAllocator to allocate, resize, and free NativeMemoryBuffers.
 // Keys are stored as normal on-heap objects in the map.
-// Each value is serialized using NativeMemoryCacheSerializer and copied into a NativeMemoryBuffer.
-// NativeMemoryCache is safe for use by multiple concurrent threads.
-interface NativeMemoryCache<KEY_TYPE, VALUE_TYPE> {
+// Each value is serialized using NativeMemoryMapSerializer and copied into a NativeMemoryBuffer.
+// NativeMemoryMap is safe for use by multiple concurrent threads.
+interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> {
 
     // The result of a put operation on the cache.
     enum class PutResult {

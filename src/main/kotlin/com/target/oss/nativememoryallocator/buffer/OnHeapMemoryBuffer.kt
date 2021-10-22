@@ -1,4 +1,4 @@
-package com.target.oss.nativememoryallocator
+package com.target.oss.nativememoryallocator.buffer
 
 import java.nio.ByteBuffer
 

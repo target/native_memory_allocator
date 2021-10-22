@@ -1,4 +1,4 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.unsafe
 
 import org.objenesis.instantiator.util.UnsafeUtils
 

@@ -1,5 +1,7 @@
 package com.target.oss.nativememoryallocator.impl
 
+import com.target.oss.nativememoryallocator.allocator.impl.FreeListImpl
+import com.target.oss.nativememoryallocator.unsafe.NativeMemoryPage
 import io.mockk.clearAllMocks
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue

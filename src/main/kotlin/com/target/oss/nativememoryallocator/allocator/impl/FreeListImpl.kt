@@ -1,5 +1,6 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.allocator.impl
 
+import com.target.oss.nativememoryallocator.unsafe.NativeMemoryPage
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}

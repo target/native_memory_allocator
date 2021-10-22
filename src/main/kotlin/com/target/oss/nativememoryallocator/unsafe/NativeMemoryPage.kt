@@ -1,4 +1,4 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.unsafe
 
 // A NativeMemoryPage is a fixed-size native memory page, with methods to read and write bytes at a certain offset.
 data class NativeMemoryPage(
@@ -29,7 +29,7 @@ data class NativeMemoryPage(
         array: ByteArray,
         arrayStartIndex: Int,
         bytesToCopy: Int,
-    ) {
+    ) { 
         if (bytesToCopy > 0) {
             UnsafeContainer.unsafe.copyMemory(
                 null, startAddress,
