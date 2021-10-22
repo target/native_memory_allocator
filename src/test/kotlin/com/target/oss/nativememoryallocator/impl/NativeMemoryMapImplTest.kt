@@ -1,6 +1,12 @@
 package com.target.oss.nativememoryallocator.impl
 
-import com.target.oss.nativememoryallocator.*
+import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
+import com.target.oss.nativememoryallocator.map.NativeMemoryMap
+import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
+import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapImpl
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -11,80 +17,80 @@ import java.util.concurrent.ThreadLocalRandom
 
 private class TestValueObject
 
-class NativeMemoryCacheImplTest : Spek({
-    Feature("NativeMemoryCacheImpl") {
+class NativeMemoryMapImplTest : Spek({
+    Feature("NativeMemoryMapImpl") {
         Scenario("test initialization") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
 
-            When("construct NativeMemoryCacheImpl") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+            When("construct NativeMemoryMapImpl") {
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
             }
             Then("initial state is correct") {
-                assertTrue(nativeMemoryCache.entries.isEmpty())
-                assertEquals(0, nativeMemoryCache.size)
+                assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertEquals(0, nativeMemoryMap.size)
             }
             clearAllMocks()
         }
         Scenario("test put of null value") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult: NativeMemoryMap.PutResult
 
             When("test single put") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
 
-                putResult = nativeMemoryCache.put(key = 1, value = null)
+                putResult = nativeMemoryMap.put(key = 1, value = null)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.NO_CHANGE, putResult)
-                assertTrue(nativeMemoryCache.entries.isEmpty())
-                assertEquals(0, nativeMemoryCache.size)
+                assertEquals(NativeMemoryMap.PutResult.NO_CHANGE, putResult)
+                assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertEquals(0, nativeMemoryMap.size)
             }
             clearAllMocks()
         }
         Scenario("test put") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
             lateinit var putValue: TestValueObject
             val serializedValue = ByteArray(10)
             ThreadLocalRandom.current().nextBytes(serializedValue)
             lateinit var nativeMemoryBuffer: NativeMemoryBuffer
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult: NativeMemoryMap.PutResult
 
             When("test single put") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
                 putValue = mockk()
                 nativeMemoryBuffer = mockk()
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 } returns serializedValue
 
                 every {
@@ -95,10 +101,10 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryBuffer.copyFromArray(byteArray = serializedValue)
                 } returns Unit
 
-                putResult = nativeMemoryCache.put(key = 1, value = putValue)
+                putResult = nativeMemoryMap.put(key = 1, value = putValue)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER, putResult)
+                assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult)
                 assertEquals(
                     setOf(
                         AbstractMap.SimpleEntry(
@@ -106,12 +112,12 @@ class NativeMemoryCacheImplTest : Spek({
                             nativeMemoryBuffer
                         )
                     ),
-                    nativeMemoryCache.entries
+                    nativeMemoryMap.entries
                 )
-                assertEquals(1, nativeMemoryCache.size)
+                assertEquals(1, nativeMemoryMap.size)
 
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 }
                 verify(exactly = 1) {
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
@@ -123,7 +129,7 @@ class NativeMemoryCacheImplTest : Spek({
             clearAllMocks()
         }
         Scenario("test put then get useThreadLocalOnHeapReadBuffer = true") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
             lateinit var putValue: TestValueObject
             val serializedValue = ByteArray(10)
@@ -131,27 +137,27 @@ class NativeMemoryCacheImplTest : Spek({
             lateinit var nativeMemoryBuffer: NativeMemoryBuffer
             lateinit var threadLocalReadBuffer: OnHeapMemoryBuffer
             lateinit var getDeserializedValue: TestValueObject
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult: NativeMemoryMap.PutResult
             var getResult: TestValueObject? = null
 
             When("test single put then get") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
                 putValue = mockk()
                 nativeMemoryBuffer = mockk()
                 threadLocalReadBuffer = mockk()
                 getDeserializedValue = mockk()
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 } returns serializedValue
 
                 every {
@@ -167,17 +173,17 @@ class NativeMemoryCacheImplTest : Spek({
                 } returns Unit
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
                 } returns getDeserializedValue
 
-                putResult = nativeMemoryCache.put(key = 1, value = putValue)
+                putResult = nativeMemoryMap.put(key = 1, value = putValue)
 
-                nativeMemoryCache.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
+                nativeMemoryMap.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
 
-                getResult = nativeMemoryCache.get(key = 1)
+                getResult = nativeMemoryMap.get(key = 1)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER, putResult)
+                assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult)
                 assertEquals(
                     setOf(
                         AbstractMap.SimpleEntry(
@@ -185,13 +191,13 @@ class NativeMemoryCacheImplTest : Spek({
                             nativeMemoryBuffer
                         )
                     ),
-                    nativeMemoryCache.entries
+                    nativeMemoryMap.entries
                 )
-                assertEquals(1, nativeMemoryCache.size)
+                assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 }
                 verify(exactly = 1) {
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
@@ -203,13 +209,13 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)
                 }
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
                 }
             }
             clearAllMocks()
         }
         Scenario("test put then get useThreadLocalOnHeapReadBuffer = false") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
             lateinit var putValue: TestValueObject
             val serializedValue = ByteArray(10)
@@ -217,12 +223,12 @@ class NativeMemoryCacheImplTest : Spek({
             lateinit var nativeMemoryBuffer: NativeMemoryBuffer
             lateinit var getDeserializedValue: TestValueObject
             lateinit var onHeapMemoryBuffer: OnHeapMemoryBuffer
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult: NativeMemoryMap.PutResult
             var getResult: TestValueObject? = null
 
             When("test single put then get") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
                 putValue = mockk()
                 nativeMemoryBuffer = mockk()
@@ -231,14 +237,15 @@ class NativeMemoryCacheImplTest : Spek({
 
                 mockkObject(OnHeapMemoryBufferFactory)
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = false,
+                    threadLocalOnHeapReadBufferInitialCapacityBytes = 0,
                 )
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 } returns serializedValue
 
                 every {
@@ -262,15 +269,15 @@ class NativeMemoryCacheImplTest : Spek({
                 } returns Unit
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
                 } returns getDeserializedValue
 
-                putResult = nativeMemoryCache.put(key = 1, value = putValue)
+                putResult = nativeMemoryMap.put(key = 1, value = putValue)
 
-                getResult = nativeMemoryCache.get(key = 1)
+                getResult = nativeMemoryMap.get(key = 1)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER, putResult)
+                assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult)
                 assertEquals(
                     setOf(
                         AbstractMap.SimpleEntry(
@@ -278,13 +285,13 @@ class NativeMemoryCacheImplTest : Spek({
                             nativeMemoryBuffer
                         )
                     ),
-                    nativeMemoryCache.entries
+                    nativeMemoryMap.entries
                 )
-                assertEquals(1, nativeMemoryCache.size)
+                assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 }
                 verify(exactly = 1) {
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
@@ -302,13 +309,13 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer)
                 }
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
                 }
             }
             clearAllMocks()
         }
         Scenario("test put reuse buffer") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
             lateinit var putValue1: TestValueObject
             lateinit var putValue2: TestValueObject
@@ -318,14 +325,14 @@ class NativeMemoryCacheImplTest : Spek({
             ThreadLocalRandom.current().nextBytes(serializedValue2)
             lateinit var nativeMemoryBuffer: NativeMemoryBuffer
             lateinit var getDeserializedValue: TestValueObject
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult1: NativeMemoryCache.PutResult
-            lateinit var putResult2: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult1: NativeMemoryMap.PutResult
+            lateinit var putResult2: NativeMemoryMap.PutResult
             lateinit var threadLocalReadBuffer: OnHeapMemoryBuffer
             var getResult: TestValueObject? = null
 
             When("test 2 puts for same key") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
                 putValue1 = mockk()
                 nativeMemoryBuffer = mockk()
@@ -335,19 +342,19 @@ class NativeMemoryCacheImplTest : Spek({
 
                 mockkObject(OnHeapMemoryBufferFactory)
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue1)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue1)
                 } returns serializedValue1
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue2)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue2)
                 } returns serializedValue2
 
                 every {
@@ -369,25 +376,25 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryBuffer.copyFromArray(byteArray = serializedValue2)
                 } returns Unit
 
-                nativeMemoryCache.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
+                nativeMemoryMap.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
 
                 every {
                     nativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)
                 } returns Unit
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
                 } returns getDeserializedValue
 
-                putResult1 = nativeMemoryCache.put(key = 1, value = putValue1)
+                putResult1 = nativeMemoryMap.put(key = 1, value = putValue1)
 
-                putResult2 = nativeMemoryCache.put(key = 1, value = putValue2)
+                putResult2 = nativeMemoryMap.put(key = 1, value = putValue2)
 
-                getResult = nativeMemoryCache.get(key = 1)
+                getResult = nativeMemoryMap.get(key = 1)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
-                assertEquals(NativeMemoryCache.PutResult.REUSED_EXISTING_BUFFER, putResult2)
+                assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
+                assertEquals(NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER, putResult2)
                 assertEquals(
                     setOf(
                         AbstractMap.SimpleEntry(
@@ -395,16 +402,16 @@ class NativeMemoryCacheImplTest : Spek({
                             nativeMemoryBuffer
                         )
                     ),
-                    nativeMemoryCache.entries
+                    nativeMemoryMap.entries
                 )
-                assertEquals(1, nativeMemoryCache.size)
+                assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue1)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue1)
                 }
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue2)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue2)
                 }
                 verify(exactly = 1) {
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
@@ -425,37 +432,37 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)
                 }
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+                    testValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
                 }
             }
             clearAllMocks()
         }
         Scenario("test put then delete") {
-            lateinit var testValueObjectNativeMemoryCacheSerializer: NativeMemoryCacheSerializer<TestValueObject>
+            lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator
             lateinit var putValue: TestValueObject
             val serializedValue = ByteArray(10)
             ThreadLocalRandom.current().nextBytes(serializedValue)
             lateinit var nativeMemoryBuffer: NativeMemoryBuffer
-            lateinit var nativeMemoryCache: NativeMemoryCacheImpl<Int, TestValueObject>
-            lateinit var putResult1: NativeMemoryCache.PutResult
-            lateinit var putResult2: NativeMemoryCache.PutResult
+            lateinit var nativeMemoryMap: NativeMemoryMapImpl<Int, TestValueObject>
+            lateinit var putResult1: NativeMemoryMap.PutResult
+            lateinit var putResult2: NativeMemoryMap.PutResult
 
             When("test put value, then put null") {
-                testValueObjectNativeMemoryCacheSerializer = mockk()
+                testValueObjectNativeMemoryMapSerializer = mockk()
                 nativeMemoryAllocator = mockk()
                 putValue = mockk()
                 nativeMemoryBuffer = mockk()
 
-                nativeMemoryCache = NativeMemoryCacheImpl(
-                    valueSerializer = testValueObjectNativeMemoryCacheSerializer,
+                nativeMemoryMap = NativeMemoryMapImpl(
+                    valueSerializer = testValueObjectNativeMemoryMapSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
                 )
 
                 every {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 } returns serializedValue
 
                 every {
@@ -470,18 +477,18 @@ class NativeMemoryCacheImplTest : Spek({
                     nativeMemoryAllocator.freeNativeMemoryBuffer(buffer = nativeMemoryBuffer)
                 } returns Unit
 
-                putResult1 = nativeMemoryCache.put(key = 1, value = putValue)
+                putResult1 = nativeMemoryMap.put(key = 1, value = putValue)
 
-                putResult2 = nativeMemoryCache.put(key = 1, value = null)
+                putResult2 = nativeMemoryMap.put(key = 1, value = null)
             }
             Then("state is correct") {
-                assertEquals(NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
-                assertEquals(NativeMemoryCache.PutResult.FREED_CURRENT_BUFFER, putResult2)
-                assertTrue(nativeMemoryCache.entries.isEmpty())
-                assertEquals(0, nativeMemoryCache.size)
+                assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
+                assertEquals(NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER, putResult2)
+                assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertEquals(0, nativeMemoryMap.size)
 
                 verify(exactly = 1) {
-                    testValueObjectNativeMemoryCacheSerializer.serializeToByteArray(value = putValue)
+                    testValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
                 }
                 verify(exactly = 1) {
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)

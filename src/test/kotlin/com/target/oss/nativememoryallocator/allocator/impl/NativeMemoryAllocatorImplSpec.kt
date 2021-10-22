@@ -1,6 +1,8 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.allocator.impl
 
-import com.target.oss.nativememoryallocator.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.allocator.impl.NativeMemoryAllocatorImpl
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.unsafe.UnsafeContainer
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.spekframework.spek2.Spek

@@ -1,22 +1,27 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.map.impl
 
-import com.target.oss.nativememoryallocator.*
+import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
+import com.target.oss.nativememoryallocator.map.NativeMemoryMap
+import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
 import java.util.concurrent.ConcurrentHashMap
 
 // All non-private methods in this class are safe for use by multiple threads.
 // put() and get() manage synchronization using ConcurrentHashMap.compute() to
 // ensure serialized access to a particular key/value mapping.
-class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
-    private val valueSerializer: NativeMemoryCacheSerializer<VALUE_TYPE>,
+class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+    private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
-    private val useThreadLocalOnHeapReadBuffer: Boolean = true,
-    private val threadLocalOnHeapReadBufferInitialCapacityBytes: Int = (256 * 1024),
-) : NativeMemoryCache<KEY_TYPE, VALUE_TYPE> {
+    useThreadLocalOnHeapReadBuffer: Boolean,
+    private val threadLocalOnHeapReadBufferInitialCapacityBytes: Int,
+) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> {
 
     private val cacheMap = ConcurrentHashMap<KEY_TYPE, NativeMemoryBuffer>()
 
-    override fun put(key: KEY_TYPE, value: VALUE_TYPE?): NativeMemoryCache.PutResult {
-        var result: NativeMemoryCache.PutResult = NativeMemoryCache.PutResult.NO_CHANGE
+    override fun put(key: KEY_TYPE, value: VALUE_TYPE?): NativeMemoryMap.PutResult {
+        var result: NativeMemoryMap.PutResult = NativeMemoryMap.PutResult.NO_CHANGE
 
         cacheMap.compute(key) { _, currentNearCacheBuffer ->
 
@@ -24,7 +29,7 @@ class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
                 // free current buffer, deleting entry from map
                 if (currentNearCacheBuffer != null) {
                     nativeMemoryAllocator.freeNativeMemoryBuffer(currentNearCacheBuffer)
-                    result = NativeMemoryCache.PutResult.FREED_CURRENT_BUFFER
+                    result = NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER
                 }
                 null
             } else if (currentNearCacheBuffer == null) {
@@ -37,7 +42,7 @@ class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
 
                 newNearCacheBuffer.copyFromArray(byteArray = newValueByteArray)
 
-                result = NativeMemoryCache.PutResult.ALLOCATED_NEW_BUFFER
+                result = NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
                 newNearCacheBuffer
             } else {
@@ -52,7 +57,7 @@ class NativeMemoryCacheImpl<KEY_TYPE, VALUE_TYPE>(
 
                 currentNearCacheBuffer.copyFromArray(byteArray = newValueByteArray)
 
-                result = NativeMemoryCache.PutResult.REUSED_EXISTING_BUFFER
+                result = NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER
 
                 currentNearCacheBuffer
             }

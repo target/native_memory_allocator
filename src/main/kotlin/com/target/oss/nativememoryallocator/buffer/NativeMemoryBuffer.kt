@@ -1,4 +1,4 @@
-package com.target.oss.nativememoryallocator
+package com.target.oss.nativememoryallocator.buffer
 
 // A NativeMemoryBuffer is a list of native memory pages, with methods to read and write the native memory contents.
 // NativeMemoryBuffer is not synchronized - each instance should be used in a single thread, or the user must provide synchronization.

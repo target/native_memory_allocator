@@ -1,6 +1,6 @@
-package com.target.oss.nativememoryallocator
+package com.target.oss.nativememoryallocator.buffer
 
-import com.target.oss.nativememoryallocator.impl.OnHeapMemoryBufferImpl
+import com.target.oss.nativememoryallocator.buffer.impl.OnHeapMemoryBufferImpl
 
 object OnHeapMemoryBufferFactory {
 
