@@ -14,4 +14,6 @@ interface OnHeapMemoryBuffer {
     fun setReadableBytes(newReadableBytes: Int)
 
     fun asByteBuffer(): ByteBuffer
+
+    fun toTrimmedArray(): ByteArray
 }

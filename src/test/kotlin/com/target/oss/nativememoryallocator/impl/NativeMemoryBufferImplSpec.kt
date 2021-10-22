@@ -1,10 +1,7 @@
 package com.target.oss.nativememoryallocator.impl
 
 import com.target.oss.nativememoryallocator.OnHeapMemoryBuffer
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
@@ -20,7 +17,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -46,7 +46,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.getByte(2L * 4_096) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("readByte(4095) reads the correct data at the correct offset") {
             lateinit var mockUnsafe: Unsafe
@@ -56,7 +55,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -82,7 +84,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.getByte((2L * 4_096) + 4_095) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("readByte(8500) reads the correct data at the correct offset") {
             lateinit var mockUnsafe: Unsafe
@@ -92,7 +93,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -118,7 +122,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.getByte((0L * 4_096) + 308) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("readByte(12287) reads the correct data at the correct offset") {
             lateinit var mockUnsafe: Unsafe
@@ -128,7 +131,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -154,7 +160,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.getByte((0L * 4_096) + 4_095) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("writeByte(0) writes the correct data at the correct offset") {
             lateinit var mockUnsafe: Unsafe
@@ -163,7 +168,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -188,7 +196,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.putByte(2L * 4_096, 42) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("writeByte(12287) writes the correct data at the correct offset") {
             lateinit var mockUnsafe: Unsafe
@@ -197,7 +204,10 @@ class NativeMemoryBufferImplSpec : Spek({
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -222,16 +232,22 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) { mockUnsafe.putByte((0L * 4_096) + 4095, 33) }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("test readAllToByteArray") {
             lateinit var mockUnsafe: Unsafe
             lateinit var nativeMemoryBufferImpl: NativeMemoryBufferImpl
             lateinit var pages: ArrayList<NativeMemoryPage>
+            val byteArrayBaseOffset = 16L
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+                every {
+                    UnsafeContainer.BYTE_ARRAY_BASE_OFFSET
+                } returns byteArrayBaseOffset
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -248,7 +264,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[0].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        any(), byteArrayBaseOffset + 0,
                         4_096.toLong()
                     )
                 } returns Unit
@@ -256,7 +272,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[1].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        any(), byteArrayBaseOffset + 4_096,
                         4_096.toLong()
                     )
                 } returns Unit
@@ -264,7 +280,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[2].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        any(), byteArrayBaseOffset + 8_192,
                         4_096.toLong()
                     )
                 } returns Unit
@@ -276,37 +292,43 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[0].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        any(), byteArrayBaseOffset + 0,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[1].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        any(), byteArrayBaseOffset + 4_096,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[2].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        any(), byteArrayBaseOffset + 8_192,
                         4_096.toLong()
                     )
                 }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("test copyToOnHeapMemoryBuffer") {
             lateinit var mockUnsafe: Unsafe
             lateinit var nativeMemoryBufferImpl: NativeMemoryBufferImpl
             lateinit var pages: ArrayList<NativeMemoryPage>
             lateinit var onHeapMemoryBuffer: OnHeapMemoryBuffer
+            val byteArrayBaseOffset = 16L
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+                every {
+                    UnsafeContainer.BYTE_ARRAY_BASE_OFFSET
+                } returns byteArrayBaseOffset
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -333,7 +355,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[0].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        any(), byteArrayBaseOffset + 0,
                         4_096.toLong()
                     )
                 } returns Unit
@@ -341,7 +363,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[1].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        any(), byteArrayBaseOffset + 4_096,
                         4_096.toLong()
                     )
                 } returns Unit
@@ -349,7 +371,7 @@ class NativeMemoryBufferImplSpec : Spek({
                 every {
                     mockUnsafe.copyMemory(
                         null, pages[2].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        any(), byteArrayBaseOffset + 8_192,
                         1_808.toLong()
                     )
                 } returns Unit
@@ -361,21 +383,21 @@ class NativeMemoryBufferImplSpec : Spek({
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[0].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        any(), byteArrayBaseOffset + 0,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[1].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        any(), byteArrayBaseOffset + 4_096,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
                         null, pages[2].startAddress,
-                        any(), UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        any(), byteArrayBaseOffset + 8_192,
                         1_808.toLong()
                     )
                 }
@@ -384,17 +406,23 @@ class NativeMemoryBufferImplSpec : Spek({
                 }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("test copyFromArray") {
             lateinit var mockUnsafe: Unsafe
             lateinit var nativeMemoryBufferImpl: NativeMemoryBufferImpl
             lateinit var pages: ArrayList<NativeMemoryPage>
             lateinit var array: ByteArray
+            val byteArrayBaseOffset = 16L
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+                every {
+                    UnsafeContainer.BYTE_ARRAY_BASE_OFFSET
+                } returns byteArrayBaseOffset
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -412,7 +440,7 @@ class NativeMemoryBufferImplSpec : Spek({
 
                 every {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        array, byteArrayBaseOffset + 0,
                         null, pages[0].startAddress,
                         4_096.toLong()
                     )
@@ -420,7 +448,7 @@ class NativeMemoryBufferImplSpec : Spek({
 
                 every {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        array, byteArrayBaseOffset + 4_096,
                         null, pages[1].startAddress,
                         4_096.toLong()
                     )
@@ -428,7 +456,7 @@ class NativeMemoryBufferImplSpec : Spek({
 
                 every {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        array, byteArrayBaseOffset + 8_192,
                         null, pages[2].startAddress,
                         1.toLong()
                     )
@@ -440,39 +468,45 @@ class NativeMemoryBufferImplSpec : Spek({
             Then("calls are as expected") {
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 0,
+                        array, byteArrayBaseOffset + 0,
                         null, pages[0].startAddress,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 4_096,
+                        array, byteArrayBaseOffset + 4_096,
                         null, pages[1].startAddress,
                         4_096.toLong()
                     )
                 }
                 verify(exactly = 1) {
                     mockUnsafe.copyMemory(
-                        array, UnsafeContainer.BYTE_ARRAY_BASE_OFFSET + 8_192,
+                        array, byteArrayBaseOffset + 8_192,
                         null, pages[2].startAddress,
                         1.toLong()
                     )
                 }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
         Scenario("test copyFromArray array too large") {
             lateinit var mockUnsafe: Unsafe
             lateinit var nativeMemoryBufferImpl: NativeMemoryBufferImpl
             lateinit var pages: ArrayList<NativeMemoryPage>
             lateinit var array: ByteArray
+            val byteArrayBaseOffset = 16L
             var exceptionsThrown = 0
 
             Given("setup nativeMemoryBufferImpl") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+                every {
+                    UnsafeContainer.BYTE_ARRAY_BASE_OFFSET
+                } returns byteArrayBaseOffset
 
                 pages = ArrayList()
                 pages.add(NativeMemoryPage(2L * 4_096))
@@ -507,7 +541,6 @@ class NativeMemoryBufferImplSpec : Spek({
                 }
             }
             clearAllMocks()
-            UnsafeContainer.restoreUnsafe()
         }
     }
 })

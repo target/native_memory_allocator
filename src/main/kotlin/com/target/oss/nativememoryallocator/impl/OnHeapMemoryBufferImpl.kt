@@ -28,8 +28,11 @@ class OnHeapMemoryBufferImpl(
     override fun asByteBuffer(): ByteBuffer =
         ByteBuffer.wrap(array, 0, readableBytes)
 
+    override fun toTrimmedArray(): ByteArray =
+        array.sliceArray(0 until readableBytes)
+
     override fun toString(): String {
-        return "OnHeapMemoryBufferImpl(readableBytes=$readableBytes,array.size=${array.size})"
+        return "OnHeapMemoryBufferImpl(readableBytes=$readableBytes, array.size=${array.size}, array=$array)"
     }
 
 }

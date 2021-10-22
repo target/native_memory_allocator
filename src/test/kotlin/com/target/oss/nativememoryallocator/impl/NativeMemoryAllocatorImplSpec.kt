@@ -1,10 +1,7 @@
 package com.target.oss.nativememoryallocator.impl
 
 import com.target.oss.nativememoryallocator.NativeMemoryBuffer
-import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
@@ -22,7 +19,10 @@ class NativeMemoryAllocatorImplSpec : Spek({
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 every {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
@@ -56,7 +56,10 @@ class NativeMemoryAllocatorImplSpec : Spek({
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 every {
                     mockUnsafe.allocateMemory(any())
@@ -94,7 +97,10 @@ class NativeMemoryAllocatorImplSpec : Spek({
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 every {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
@@ -177,7 +183,9 @@ class NativeMemoryAllocatorImplSpec : Spek({
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 every {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
@@ -305,7 +313,9 @@ class NativeMemoryAllocatorImplSpec : Spek({
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
-                UnsafeContainer.unsafe = mockUnsafe
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
 
                 every {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
