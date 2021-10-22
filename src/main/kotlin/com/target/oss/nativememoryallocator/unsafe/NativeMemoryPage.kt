@@ -29,7 +29,7 @@ data class NativeMemoryPage(
         array: ByteArray,
         arrayStartIndex: Int,
         bytesToCopy: Int,
-    ) { 
+    ) {
         if (bytesToCopy > 0) {
             UnsafeContainer.unsafe.copyMemory(
                 null, startAddress,
