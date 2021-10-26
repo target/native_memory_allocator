@@ -6,19 +6,19 @@ import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
-import java.util.concurrent.ConcurrentHashMap
+import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
+import java.util.concurrent.ConcurrentMap
 
 // All non-private methods in this class are safe for use by multiple threads.
-// put() and get() manage synchronization using ConcurrentHashMap.compute() to
+// put() and get() manage synchronization using ConcurrentMap.compute() to
 // ensure serialized access to a particular key/value mapping.
 class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
     useThreadLocalOnHeapReadBuffer: Boolean,
     private val threadLocalOnHeapReadBufferInitialCapacityBytes: Int,
+    private val cacheMap: ConcurrentMap<KEY_TYPE, NativeMemoryBuffer>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> {
-
-    private val cacheMap = ConcurrentHashMap<KEY_TYPE, NativeMemoryBuffer>()
 
     override fun put(key: KEY_TYPE, value: VALUE_TYPE?): NativeMemoryMap.PutResult {
         var result: NativeMemoryMap.PutResult = NativeMemoryMap.PutResult.NO_CHANGE
@@ -115,5 +115,8 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
 
     override val size: Int
         get() = cacheMap.size
+
+    override val stats: NativeMemoryMapStats
+        get() = NativeMemoryMapStats()
 
 }

@@ -1,5 +1,6 @@
 package com.target.oss.nativememoryallocator.map
 
+import com.github.benmanes.caffeine.cache.stats.CacheStats
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 
@@ -13,6 +14,11 @@ interface NativeMemoryMapSerializer<VALUE_TYPE> {
     fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): VALUE_TYPE
 
 }
+
+data class NativeMemoryMapStats(
+    // caffeineStats is populated only if using the caffeine map backend.
+    val caffeineStats: CacheStats? = null,
+)
 
 // NativeMemoryMap is mapping of keys to values backed by a ConcurrentHashMap.
 // NativeMemoryMap uses NativeMemoryAllocator to allocate, resize, and free NativeMemoryBuffers.
@@ -51,5 +57,8 @@ interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> {
 
     // Get the size of the cache.
     val size: Int
+
+    // Get the NativeMemoryMapStats.
+    val stats: NativeMemoryMapStats
 
 }
