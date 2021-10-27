@@ -14,10 +14,24 @@ enum class NativeMemoryMapBackend {
 }
 
 interface CaffeineConfigBuilder {
+
+    // Set a TTL so that entries are evicted after the duration elapses after read or write operations
+    // for an entry.
+    // See https://github.com/ben-manes/caffeine/wiki/Eviction#time-based
     fun expireAfterAccess(duration: Long, timeUnit: TimeUnit): CaffeineConfigBuilder
+
+    // Set a maximum size after which least-recently-used entries are evicted.
+    // See https://github.com/ben-manes/caffeine/wiki/Eviction#size-based
     fun maximumSize(maximumSize: Long): CaffeineConfigBuilder
+
+    // Enable statistics recording.
+    // See https://github.com/ben-manes/caffeine/wiki/Statistics
     fun recordStats(): CaffeineConfigBuilder
+
+    // Override the standard Ticker, for unit testing only.
+    // See https://github.com/ben-manes/caffeine/wiki/Testing
     fun ticker(ticker: Ticker): CaffeineConfigBuilder
+
 }
 
 data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
