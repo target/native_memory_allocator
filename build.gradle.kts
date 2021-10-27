@@ -55,6 +55,8 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.8.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("ch.qos.logback:logback-classic:1.2.6")
+    testImplementation("com.google.guava:guava-testlib:31.0.1-jre")
+
 }
 
 tasks.withType<KotlinCompile> {

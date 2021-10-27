@@ -1,6 +1,7 @@
 package com.target.oss.nativememoryallocator.map.impl
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.Ticker
 import com.target.oss.nativememoryallocator.map.CaffeineConfigBuilder
 import java.util.concurrent.TimeUnit
 
@@ -13,11 +14,6 @@ class CaffeineConfigBuilderImpl(
         return this
     }
 
-    override fun expireAfterWrite(duration: Long, timeUnit: TimeUnit): CaffeineConfigBuilder {
-        caffeine = caffeine.expireAfterWrite(duration, timeUnit)
-        return this
-    }
-
     override fun maximumSize(maximumSize: Long): CaffeineConfigBuilder {
         caffeine = caffeine.maximumSize(maximumSize)
         return this
@@ -25,6 +21,11 @@ class CaffeineConfigBuilderImpl(
 
     override fun recordStats(): CaffeineConfigBuilder {
         caffeine = caffeine.recordStats()
+        return this
+    }
+
+    override fun ticker(ticker: Ticker): CaffeineConfigBuilder {
+        caffeine = caffeine.ticker(ticker)
         return this
     }
 }

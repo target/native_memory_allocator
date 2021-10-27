@@ -1,5 +1,6 @@
 package com.target.oss.nativememoryallocator.map
 
+import com.github.benmanes.caffeine.cache.Ticker
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.map.impl.CaffeineNativeMemoryMapImpl
 import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapImpl
@@ -14,9 +15,9 @@ enum class NativeMemoryMapBackend {
 
 interface CaffeineConfigBuilder {
     fun expireAfterAccess(duration: Long, timeUnit: TimeUnit): CaffeineConfigBuilder
-    fun expireAfterWrite(duration: Long, timeUnit: TimeUnit): CaffeineConfigBuilder
     fun maximumSize(maximumSize: Long): CaffeineConfigBuilder
     fun recordStats(): CaffeineConfigBuilder
+    fun ticker(ticker: Ticker): CaffeineConfigBuilder
 }
 
 data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(

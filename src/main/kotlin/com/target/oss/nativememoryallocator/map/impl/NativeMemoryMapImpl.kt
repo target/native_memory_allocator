@@ -81,7 +81,7 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     override fun get(key: KEY_TYPE): VALUE_TYPE? {
         var onHeapReadBuffer: OnHeapMemoryBuffer? = null
 
-        cacheMap.compute(key) { _, nearCacheBuffer ->
+        cacheMap.computeIfPresent(key) { _, nearCacheBuffer ->
 
             onHeapReadBuffer =
                 if (nearCacheBuffer == null) {

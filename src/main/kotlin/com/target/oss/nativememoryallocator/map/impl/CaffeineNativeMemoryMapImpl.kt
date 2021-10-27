@@ -10,7 +10,7 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-class EvictionListener<KEY_TYPE>(
+class CaffeineEvictionListener<KEY_TYPE>(
     private val nativeMemoryAllocator: NativeMemoryAllocator,
 ) : RemovalListener<KEY_TYPE, NativeMemoryBuffer> {
 
@@ -38,7 +38,7 @@ fun <KEY_TYPE> buildCaffeineCache(
     return configBuilder
         .caffeine
         .evictionListener(
-            EvictionListener<KEY_TYPE>(
+            CaffeineEvictionListener<KEY_TYPE>(
                 nativeMemoryAllocator = nativeMemoryAllocator,
             )
         )
