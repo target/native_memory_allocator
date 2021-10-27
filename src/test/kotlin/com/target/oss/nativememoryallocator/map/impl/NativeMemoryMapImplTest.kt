@@ -1,4 +1,4 @@
-package com.target.oss.nativememoryallocator.impl
+package com.target.oss.nativememoryallocator.map.impl
 
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
@@ -6,13 +6,13 @@ import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
-import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapImpl
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
 private class TestValueObject
@@ -32,6 +32,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
             }
             Then("initial state is correct") {
@@ -55,6 +56,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 putResult = nativeMemoryMap.put(key = 1, value = null)
@@ -87,6 +89,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 every {
@@ -154,6 +157,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 every {
@@ -242,6 +246,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = false,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = 0,
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 every {
@@ -347,6 +352,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 every {
@@ -459,6 +465,7 @@ class NativeMemoryMapImplTest : Spek({
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = true,
                     threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+                    cacheMap = ConcurrentHashMap(),
                 )
 
                 every {
