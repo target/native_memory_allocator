@@ -60,7 +60,7 @@ data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
                     caffeineConfigFunction = caffeineConfigFunction,
                 )
 
-                val nativeMemoryMapImpl = NativeMemoryMapImpl(
+                val nativeMemoryMap = NativeMemoryMapImpl(
                     valueSerializer = valueSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = useThreadLocalOnHeapReadBuffer,
@@ -70,7 +70,7 @@ data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
 
                 CaffeineNativeMemoryMapImpl(
                     caffeineCache = caffeineCache,
-                    nativeMemoryMapImpl = nativeMemoryMapImpl,
+                    nativeMemoryMap = nativeMemoryMap,
                 )
             }
         }

@@ -48,8 +48,8 @@ fun <KEY_TYPE> buildCaffeineCache(
 
 class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val caffeineCache: Cache<KEY_TYPE, NativeMemoryBuffer>,
-    nativeMemoryMapImpl: NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>,
-) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMapImpl {
+    nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
+) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 
     override val stats: NativeMemoryMapStats
         get() = NativeMemoryMapStats(
