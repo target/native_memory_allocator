@@ -23,23 +23,21 @@ data class NativeMemoryMapStats(
 
 // NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
 data class NativeMemoryMapOperationCounters(
-    val numUpdatesTotal: AtomicLong = AtomicLong(0),
+    val numPutsNoChanges: AtomicLong = AtomicLong(0),
 
-    val numUpdatesNoChanges: AtomicLong = AtomicLong(0),
+    val numPutsFreedBuffer: AtomicLong = AtomicLong(0),
 
-    val numUpdatesFreedBuffer: AtomicLong = AtomicLong(0),
+    val numPutsReusedBuffer: AtomicLong = AtomicLong(0),
 
-    val numUpdatesReusedBuffer: AtomicLong = AtomicLong(0),
-
-    val numUpdatesNewBuffer: AtomicLong = AtomicLong(0),
+    val numPutsNewBuffer: AtomicLong = AtomicLong(0),
 
     val numDeletesFreedBuffer: AtomicLong = AtomicLong(0),
 
     val numDeletesNoChange: AtomicLong = AtomicLong(0),
 
-    val numNullValueReads: AtomicLong = AtomicLong(0),
+    val numGetsNullValue: AtomicLong = AtomicLong(0),
 
-    val numNonNullValueReads: AtomicLong = AtomicLong(0),
+    val numGetsNonNullValue: AtomicLong = AtomicLong(0),
 )
 
 // BaseNativeMemoryMap contains NativeMemoryMap methods that do not depend on generic types.

@@ -99,14 +99,13 @@ class ConcurrentHashMapScenario {
 
         val operationCounters = nativeMemoryMap.operationCounters
         assertNotNull(operationCounters)
-        assertEquals(2, operationCounters?.numUpdatesTotal?.get())
-        assertEquals(0, operationCounters?.numUpdatesNoChanges?.get())
-        assertEquals(0, operationCounters?.numUpdatesFreedBuffer?.get())
-        assertEquals(0, operationCounters?.numUpdatesReusedBuffer?.get())
-        assertEquals(2, operationCounters?.numUpdatesNewBuffer?.get())
+        assertEquals(0, operationCounters?.numPutsNoChanges?.get())
+        assertEquals(0, operationCounters?.numPutsFreedBuffer?.get())
+        assertEquals(0, operationCounters?.numPutsReusedBuffer?.get())
+        assertEquals(2, operationCounters?.numPutsNewBuffer?.get())
         assertEquals(1, operationCounters?.numDeletesFreedBuffer?.get())
         assertEquals(0, operationCounters?.numDeletesNoChange?.get())
-        assertEquals(5, operationCounters?.numNonNullValueReads?.get())
-        assertEquals(1, operationCounters?.numNullValueReads?.get())
+        assertEquals(5, operationCounters?.numGetsNonNullValue?.get())
+        assertEquals(1, operationCounters?.numGetsNullValue?.get())
     }
 }

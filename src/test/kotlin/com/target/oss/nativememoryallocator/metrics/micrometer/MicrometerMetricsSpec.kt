@@ -152,28 +152,26 @@ class MicrometerMetricsSpec : Spek({
             val caffeineEvictionCountValue = 43
 
             val operationCounters = NativeMemoryMapOperationCounters()
-            operationCounters.numUpdatesTotal.set(44)
-            operationCounters.numUpdatesNoChanges.set(45)
-            operationCounters.numUpdatesFreedBuffer.set(46)
-            operationCounters.numUpdatesReusedBuffer.set(47)
-            operationCounters.numUpdatesNewBuffer.set(48)
-            operationCounters.numDeletesFreedBuffer.set(49)
-            operationCounters.numDeletesNoChange.set(50)
-            operationCounters.numNullValueReads.set(51)
-            operationCounters.numNonNullValueReads.set(52)
+            operationCounters.numPutsNoChanges.set(44)
+            operationCounters.numPutsFreedBuffer.set(45)
+            operationCounters.numPutsReusedBuffer.set(46)
+            operationCounters.numPutsNewBuffer.set(47)
+            operationCounters.numDeletesFreedBuffer.set(48)
+            operationCounters.numDeletesNoChange.set(49)
+            operationCounters.numGetsNullValue.set(50)
+            operationCounters.numGetsNonNullValue.set(51)
 
             val meterNameToValue = mapOf(
                 "nativeMemoryMap.size" to mapSizeValue,
                 "nativeMemoryMap.caffeineEvictionCount" to caffeineEvictionCountValue,
-                "nativeMemoryMap.numUpdatesTotal" to operationCounters.numUpdatesTotal.get(),
-                "nativeMemoryMap.numUpdatesNoChange" to operationCounters.numUpdatesNoChanges.get(),
-                "nativeMemoryMap.numUpdatesFreedBuffer" to operationCounters.numUpdatesFreedBuffer.get(),
-                "nativeMemoryMap.numUpdatesReusedBuffer" to operationCounters.numUpdatesReusedBuffer.get(),
-                "nativeMemoryMap.numUpdatesNewBuffer" to operationCounters.numUpdatesNewBuffer.get(),
+                "nativeMemoryMap.numPutsNoChange" to operationCounters.numPutsNoChanges.get(),
+                "nativeMemoryMap.numPutsFreedBuffer" to operationCounters.numPutsFreedBuffer.get(),
+                "nativeMemoryMap.numPutsReusedBuffer" to operationCounters.numPutsReusedBuffer.get(),
+                "nativeMemoryMap.numPutsNewBuffer" to operationCounters.numPutsNewBuffer.get(),
                 "nativeMemoryMap.numDeletesFreedBuffer" to operationCounters.numDeletesFreedBuffer.get(),
                 "nativeMemoryMap.numDeletesNoChange" to operationCounters.numDeletesNoChange.get(),
-                "nativeMemoryMap.numNullValueReads" to operationCounters.numNullValueReads.get(),
-                "nativeMemoryMap.numNonNullValueReads" to operationCounters.numNonNullValueReads.get(),
+                "nativeMemoryMap.numGetsNullValue" to operationCounters.numGetsNullValue.get(),
+                "nativeMemoryMap.numGetsNonNullValue" to operationCounters.numGetsNonNullValue.get(),
             )
 
             Given("setup variables") {
@@ -206,12 +204,12 @@ class MicrometerMetricsSpec : Spek({
                 )
             }
             Then("MicrometerNativeMemoryAllocatorMetrics registers metrics with MeterRegistry") {
-                assertEquals(11, meterRegistry.meters.size)
+                assertEquals(10, meterRegistry.meters.size)
 
                 logger.info { "meterRegistry.meters = ${meterRegistry.meters}" }
                 val idToMeterMap = meterRegistry.meters.filterNotNull().associateBy { it.id }
 
-                assertEquals(11, idToMeterMap.size)
+                assertEquals(10, idToMeterMap.size)
                 val idAndMeterList = idToMeterMap.toList()
 
                 meterNameToValue.forEach { (meterName, expectedValue) ->

@@ -85,34 +85,28 @@ class MicrometerNativeMemoryMapMetrics(
         operationCounters?.apply {
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numUpdatesTotal",
+                name = "nativeMemoryMap.numPutsNoChange",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numUpdatesTotal.toDouble() }
+            ) { operationCounters.numPutsNoChanges.toDouble() }
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numUpdatesNoChange",
+                name = "nativeMemoryMap.numPutsFreedBuffer",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numUpdatesNoChanges.toDouble() }
+            ) { operationCounters.numPutsFreedBuffer.toDouble() }
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numUpdatesFreedBuffer",
+                name = "nativeMemoryMap.numPutsReusedBuffer",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numUpdatesFreedBuffer.toDouble() }
+            ) { operationCounters.numPutsReusedBuffer.toDouble() }
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numUpdatesReusedBuffer",
+                name = "nativeMemoryMap.numPutsNewBuffer",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numUpdatesReusedBuffer.toDouble() }
-
-            meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numUpdatesNewBuffer",
-                gaugeObject = this,
-                tags = tags,
-            ) { operationCounters.numUpdatesNewBuffer.toDouble() }
+            ) { operationCounters.numPutsNewBuffer.toDouble() }
 
             meterRegistry.registerGauge(
                 name = "nativeMemoryMap.numDeletesFreedBuffer",
@@ -127,16 +121,16 @@ class MicrometerNativeMemoryMapMetrics(
             ) { operationCounters.numDeletesNoChange.toDouble() }
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numNullValueReads",
+                name = "nativeMemoryMap.numGetsNullValue",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numNullValueReads.toDouble() }
+            ) { operationCounters.numGetsNullValue.toDouble() }
 
             meterRegistry.registerGauge(
-                name = "nativeMemoryMap.numNonNullValueReads",
+                name = "nativeMemoryMap.numGetsNonNullValue",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numNonNullValueReads.toDouble() }
+            ) { operationCounters.numGetsNonNullValue.toDouble() }
         }
     }
 }

@@ -14,9 +14,9 @@ class NativeMemoryMapWithOperationCountersImpl<KEY_TYPE, VALUE_TYPE>(
 
         operationCounters.apply {
             if (getResult != null) {
-                numNonNullValueReads.incrementAndGet()
+                numGetsNonNullValue.incrementAndGet()
             } else {
-                numNullValueReads.incrementAndGet()
+                numGetsNullValue.incrementAndGet()
             }
         }
 
@@ -27,12 +27,11 @@ class NativeMemoryMapWithOperationCountersImpl<KEY_TYPE, VALUE_TYPE>(
         val putResult = nativeMemoryMap.put(key = key, value = value)
 
         operationCounters.apply {
-            numUpdatesTotal.incrementAndGet()
             when (putResult) {
-                NativeMemoryMap.PutResult.NO_CHANGE -> numUpdatesNoChanges.incrementAndGet()
-                NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER -> numUpdatesFreedBuffer.incrementAndGet()
-                NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER -> numUpdatesNewBuffer.incrementAndGet()
-                NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER -> numUpdatesReusedBuffer.incrementAndGet()
+                NativeMemoryMap.PutResult.NO_CHANGE -> numPutsNoChanges.incrementAndGet()
+                NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER -> numPutsFreedBuffer.incrementAndGet()
+                NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER -> numPutsNewBuffer.incrementAndGet()
+                NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER -> numPutsReusedBuffer.incrementAndGet()
             }
         }
 
