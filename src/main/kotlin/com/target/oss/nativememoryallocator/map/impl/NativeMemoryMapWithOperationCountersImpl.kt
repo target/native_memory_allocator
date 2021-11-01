@@ -1,13 +1,12 @@
 package com.target.oss.nativememoryallocator.map.impl
 
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
-import com.target.oss.nativememoryallocator.map.NativeMemoryMapOperationCounters
 
 class NativeMemoryMapWithOperationCountersImpl<KEY_TYPE, VALUE_TYPE>(
     private val nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 
-    override val operationCounters = NativeMemoryMapOperationCounters()
+    override val operationCounters = NativeMemoryMapOperationCountersImpl()
 
     override fun get(key: KEY_TYPE): VALUE_TYPE? {
         val getResult = nativeMemoryMap.get(key = key)

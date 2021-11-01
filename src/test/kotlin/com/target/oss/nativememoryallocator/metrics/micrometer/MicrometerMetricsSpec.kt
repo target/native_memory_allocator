@@ -3,8 +3,8 @@ package com.target.oss.nativememoryallocator.metrics.micrometer
 import com.github.benmanes.caffeine.cache.stats.CacheStats
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.map.BaseNativeMemoryMap
-import com.target.oss.nativememoryallocator.map.NativeMemoryMapOperationCounters
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
+import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapOperationCountersImpl
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
@@ -151,7 +151,7 @@ class MicrometerMetricsSpec : Spek({
             val mapSizeValue = 42
             val caffeineEvictionCountValue = 43
 
-            val operationCounters = NativeMemoryMapOperationCounters()
+            val operationCounters = NativeMemoryMapOperationCountersImpl()
             operationCounters.numPutsNoChanges.set(44)
             operationCounters.numPutsFreedBuffer.set(45)
             operationCounters.numPutsReusedBuffer.set(46)

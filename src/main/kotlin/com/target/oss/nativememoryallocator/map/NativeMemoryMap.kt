@@ -3,7 +3,6 @@ package com.target.oss.nativememoryallocator.map
 import com.github.benmanes.caffeine.cache.stats.CacheStats
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
-import java.util.concurrent.atomic.AtomicLong
 
 // NativeMemoryMapSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryMap.
 interface NativeMemoryMapSerializer<VALUE_TYPE> {
@@ -22,23 +21,23 @@ data class NativeMemoryMapStats(
 )
 
 // NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
-data class NativeMemoryMapOperationCounters(
-    val numPutsNoChanges: AtomicLong = AtomicLong(0),
+interface NativeMemoryMapOperationCounters {
+    val numPutsNoChanges: Number
 
-    val numPutsFreedBuffer: AtomicLong = AtomicLong(0),
+    val numPutsFreedBuffer: Number
 
-    val numPutsReusedBuffer: AtomicLong = AtomicLong(0),
+    val numPutsReusedBuffer: Number
 
-    val numPutsNewBuffer: AtomicLong = AtomicLong(0),
+    val numPutsNewBuffer: Number
 
-    val numDeletesFreedBuffer: AtomicLong = AtomicLong(0),
+    val numDeletesFreedBuffer: Number
 
-    val numDeletesNoChange: AtomicLong = AtomicLong(0),
+    val numDeletesNoChange: Number
 
-    val numGetsNullValue: AtomicLong = AtomicLong(0),
+    val numGetsNullValue: Number
 
-    val numGetsNonNullValue: AtomicLong = AtomicLong(0),
-)
+    val numGetsNonNullValue: Number
+}
 
 // BaseNativeMemoryMap contains NativeMemoryMap methods that do not depend on generic types.
 interface BaseNativeMemoryMap {

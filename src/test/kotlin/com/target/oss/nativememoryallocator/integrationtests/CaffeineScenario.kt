@@ -153,14 +153,14 @@ class CaffeineScenario {
 
         val operationCounters = nativeMemoryMap.operationCounters
         assertNotNull(operationCounters)
-        assertEquals(0, operationCounters?.numPutsNoChanges?.get())
-        assertEquals(0, operationCounters?.numPutsFreedBuffer?.get())
-        assertEquals(0, operationCounters?.numPutsReusedBuffer?.get())
-        assertEquals(2, operationCounters?.numPutsNewBuffer?.get())
-        assertEquals(0, operationCounters?.numDeletesFreedBuffer?.get())
-        assertEquals(2, operationCounters?.numDeletesNoChange?.get())
+        assertEquals(0, operationCounters?.numPutsNoChanges?.toLong())
+        assertEquals(0, operationCounters?.numPutsFreedBuffer?.toLong())
+        assertEquals(0, operationCounters?.numPutsReusedBuffer?.toLong())
+        assertEquals(2, operationCounters?.numPutsNewBuffer?.toLong())
+        assertEquals(0, operationCounters?.numDeletesFreedBuffer?.toLong())
+        assertEquals(2, operationCounters?.numDeletesNoChange?.toLong())
         // exact values are not known due to awaitCondition
-        assertTrue((operationCounters?.numGetsNullValue?.get() ?: 0) >= 5)
-        assertTrue((operationCounters?.numGetsNonNullValue?.get() ?: 0) >= 1)
+        assertTrue((operationCounters?.numGetsNullValue?.toLong() ?: 0) >= 5)
+        assertTrue((operationCounters?.numGetsNonNullValue?.toLong() ?: 0) >= 1)
     }
 }
