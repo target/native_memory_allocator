@@ -37,6 +37,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(totalNumPages, freeList.numFreePages())
                 assertEquals(0, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }
@@ -77,6 +79,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(totalNumPages - 1, freeList.numFreePages())
                 assertEquals(1, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }
@@ -122,6 +126,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(0, freeList.numFreePages())
                 assertEquals(100, freeList.numUsedPages())
+                assertEquals(1, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }
@@ -165,6 +171,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(100, freeList.numFreePages())
                 assertEquals(0, freeList.numUsedPages())
+                assertEquals(1, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }
@@ -200,6 +208,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(0, freeList.numFreePages())
                 assertEquals(100, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             When("free 100 pages") {
                 freeList.freePages(pagesAllocated)
@@ -213,6 +223,8 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(totalNumPages, freeList.numFreePages())
                 assertEquals(0, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }
@@ -271,6 +283,73 @@ class FreeListSpec : Spek({
                 assertEquals(totalNumPages, freeList.totalNumPages)
                 assertEquals(99, freeList.numFreePages())
                 assertEquals(1, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(0, freeList.numFreeExceptions())
+            }
+            clearAllMocks()
+        }
+        Scenario("test allocation of 2 pages then free 3 pages") {
+            val baseNativeMemoryPointer = 0x80000000
+            val pageSizeBytes = 4_096
+            val totalNumPages = 100
+
+            lateinit var freeList: FreeListImpl
+
+            val pagesAllocated = arrayListOf<NativeMemoryPage>()
+            var numFreeExceptions = 0
+
+            val expectedAllocations = (0 until 2).map {
+                NativeMemoryPage(baseNativeMemoryPointer + (pageSizeBytes * it))
+            }
+
+            Given("setup freeList") {
+                freeList = FreeListImpl(
+                    baseNativeMemoryPointer = baseNativeMemoryPointer,
+                    pageSizeBytes = pageSizeBytes,
+                    totalNumPages = totalNumPages,
+                )
+            }
+            When("allocate 2 pages") {
+                pagesAllocated.addAll(freeList.allocatePages(2))
+            }
+            Then("freeList state is correct") {
+                assertEquals(expectedAllocations, pagesAllocated)
+
+                val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
+                    baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
+                }
+                expectedFreePageArray[0] = 0
+                expectedFreePageArray[1] = 0
+                assertTrue(expectedFreePageArray.contentEquals(freeList.freePageArray()))
+
+                assertEquals(2, freeList.nextFreePageIndex())
+                assertEquals(totalNumPages, freeList.totalNumPages)
+                assertEquals(98, freeList.numFreePages())
+                assertEquals(2, freeList.numUsedPages())
+            }
+            When("free 3 pages") {
+                freeList.freePages(listOf(pagesAllocated[0], pagesAllocated[1]))
+
+                try {
+                    freeList.freePages(listOf(pagesAllocated[1]))
+                } catch (e: IllegalStateException) {
+                    numFreeExceptions++
+                }
+            }
+            Then("freeList state is correct") {
+                assertEquals(expectedAllocations, pagesAllocated)
+
+                val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
+                    baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
+                }
+                assertTrue(expectedFreePageArray.contentEquals(freeList.freePageArray()))
+
+                assertEquals(0, freeList.nextFreePageIndex())
+                assertEquals(totalNumPages, freeList.totalNumPages)
+                assertEquals(100, freeList.numFreePages())
+                assertEquals(0, freeList.numUsedPages())
+                assertEquals(0, freeList.numAllocationExceptions())
+                assertEquals(1, freeList.numFreeExceptions())
             }
             clearAllMocks()
         }

@@ -1,8 +1,8 @@
 package com.target.oss.nativememoryallocator.allocator.impl
 
-import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocatorMetadata
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.impl.NativeMemoryBufferImpl
 import com.target.oss.nativememoryallocator.unsafe.UnsafeContainer
 import mu.KotlinLogging
@@ -49,20 +49,31 @@ class NativeMemoryAllocatorImpl(
     // for unit test only
     fun baseNativeMemoryPointer(): Long = baseNativeMemoryPointer
 
-    override fun numFreePages(): Int = freeList.numFreePages()
+    override val numFreePages: Int
+        get() = freeList.numFreePages()
 
-    override fun totalNumPages(): Int = freeList.totalNumPages
+    override val totalNumPages: Int
+        get() = freeList.totalNumPages
 
-    override fun numUsedPages(): Int = freeList.numUsedPages()
+    override val numUsedPages: Int
+        get() = freeList.numUsedPages()
 
-    override fun nativeMemoryAllocatorMetadata(): NativeMemoryAllocatorMetadata =
-        synchronized(freeList) {
+    override val numAllocationExceptions: Int
+        get() = freeList.numAllocationExceptions()
+
+    override val numFreeExceptions: Int
+        get() = freeList.numFreeExceptions()
+
+    override val nativeMemoryAllocatorMetadata: NativeMemoryAllocatorMetadata
+        get() = synchronized(freeList) {
             NativeMemoryAllocatorMetadata(
                 pageSizeBytes = pageSizeBytes,
                 nextFreePageIndex = freeList.nextFreePageIndex(),
                 numFreePages = freeList.numFreePages(),
                 totalNumPages = freeList.totalNumPages,
                 numUsedPages = freeList.numUsedPages(),
+                numAllocationExceptions = freeList.numAllocationExceptions(),
+                numFreeExceptions = freeList.numFreeExceptions(),
                 nativeMemorySizeBytes = nativeMemorySizeBytes,
             )
         }

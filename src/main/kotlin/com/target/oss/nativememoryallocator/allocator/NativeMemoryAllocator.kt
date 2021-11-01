@@ -13,13 +13,17 @@ interface NativeMemoryAllocator {
 
     val nativeMemorySizeBytes: Long
 
-    fun numFreePages(): Int
+    val numFreePages: Int
 
-    fun totalNumPages(): Int
+    val totalNumPages: Int
 
-    fun numUsedPages(): Int
+    val numUsedPages: Int
 
-    fun nativeMemoryAllocatorMetadata(): NativeMemoryAllocatorMetadata
+    val numAllocationExceptions: Int
+
+    val numFreeExceptions: Int
+
+    val nativeMemoryAllocatorMetadata: NativeMemoryAllocatorMetadata
 
     // malloc
     fun allocateNativeMemoryBuffer(capacityBytes: Int): NativeMemoryBuffer

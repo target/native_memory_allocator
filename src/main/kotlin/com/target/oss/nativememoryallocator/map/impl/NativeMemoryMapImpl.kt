@@ -5,6 +5,7 @@ import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
+import com.target.oss.nativememoryallocator.map.NativeMemoryMapOperationCounters
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
 import java.util.concurrent.ConcurrentMap
@@ -66,6 +67,10 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         return result
     }
 
+    override fun delete(key: KEY_TYPE): Boolean {
+        return (put(key = key, value = null) == NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER)
+    }
+
     // not private for unit test
     val threadLocalHeapReadBuffer =
         if (useThreadLocalOnHeapReadBuffer) {
@@ -107,9 +112,6 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         }
     }
 
-    override fun getNativeMemoryBuffer(key: KEY_TYPE): NativeMemoryBuffer? =
-        cacheMap[key]
-
     override val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBuffer>>
         get() = cacheMap.entries
 
@@ -118,5 +120,7 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
 
     override val stats: NativeMemoryMapStats
         get() = NativeMemoryMapStats()
+
+    override val operationCounters: NativeMemoryMapOperationCounters? = null
 
 }

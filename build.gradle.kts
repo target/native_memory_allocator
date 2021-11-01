@@ -47,6 +47,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.5")
     implementation("io.github.microutils:kotlin-logging:2.0.11")
     implementation("org.objenesis:objenesis:3.2")
+    implementation("io.micrometer:micrometer-core:1.7.5")
     api("com.github.ben-manes.caffeine:caffeine:3.0.4")
 
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")

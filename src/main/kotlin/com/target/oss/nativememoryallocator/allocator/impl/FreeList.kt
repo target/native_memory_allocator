@@ -16,6 +16,10 @@ interface FreeList {
 
     fun numUsedPages(): Int
 
+    fun numAllocationExceptions(): Int
+
+    fun numFreeExceptions(): Int
+
     fun allocatePages(numPagesToAllocate: Int): ArrayList<NativeMemoryPage>
 
     fun freePages(pages: List<NativeMemoryPage>)

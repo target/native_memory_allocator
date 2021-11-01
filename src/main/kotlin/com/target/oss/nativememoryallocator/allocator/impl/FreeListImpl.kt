@@ -18,6 +18,10 @@ class FreeListImpl(
 
     private var numFreePages: Int
 
+    private var numAllocationExceptions: Int = 0
+
+    private var numFreeExceptions: Int = 0
+
     init {
         logger.info { "start creating $totalNumPages free pages" }
 
@@ -42,6 +46,12 @@ class FreeListImpl(
     @Synchronized
     override fun numUsedPages(): Int = totalNumPages - numFreePages()
 
+    @Synchronized
+    override fun numAllocationExceptions(): Int = numAllocationExceptions
+
+    @Synchronized
+    override fun numFreeExceptions(): Int = numFreeExceptions
+
     private fun allocatePage(): NativeMemoryPage? =
         if (numFreePages <= 0) {
             null
@@ -56,6 +66,7 @@ class FreeListImpl(
 
     private fun freePage(nativeMemoryPage: NativeMemoryPage) {
         if (numFreePages >= totalNumPages) {
+            numFreeExceptions += 1
             throw IllegalStateException("numFreePages = $numFreePages >= totalNumPages = $totalNumPages")
         }
         nextFreePageIndex -= 1
@@ -72,6 +83,7 @@ class FreeListImpl(
         }
 
         if (allocatedPages.size != numPagesToAllocate) {
+            numAllocationExceptions += 1
             freePages(allocatedPages)
             throw IllegalStateException("unable to allocate all pages, numPagesToAllocate = $numPagesToAllocate allocatedPages.size = ${allocatedPages.size}")
         }
