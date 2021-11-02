@@ -89,9 +89,7 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         cacheMap.computeIfPresent(key) { _, nearCacheBuffer ->
 
             onHeapReadBuffer =
-                if (nearCacheBuffer == null) {
-                    null
-                } else {
+                run {
                     // copy nearCacheBuffer to readBuffer
                     val readBuffer = if (threadLocalHeapReadBuffer != null) {
                         threadLocalHeapReadBuffer.get()

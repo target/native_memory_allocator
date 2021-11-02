@@ -4,41 +4,6 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 
-// NativeMemoryMapSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryMap.
-interface NativeMemoryMapSerializer<VALUE_TYPE> {
-
-    // serialize value to a ByteArray
-    fun serializeToByteArray(value: VALUE_TYPE): ByteArray
-
-    // deserialize value from an OnHeapMemoryBuffer
-    fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): VALUE_TYPE
-
-}
-
-data class NativeMemoryMapStats(
-    // caffeineStats is populated only if using the caffeine map backend.
-    val caffeineStats: CacheStats? = null,
-)
-
-// NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
-interface NativeMemoryMapOperationCounters {
-    val numPutsNoChange: Number
-
-    val numPutsFreedBuffer: Number
-
-    val numPutsReusedBuffer: Number
-
-    val numPutsNewBuffer: Number
-
-    val numDeletesFreedBuffer: Number
-
-    val numDeletesNoChange: Number
-
-    val numGetsNullValue: Number
-
-    val numGetsNonNullValue: Number
-}
-
 // BaseNativeMemoryMap contains NativeMemoryMap methods that do not depend on generic types.
 interface BaseNativeMemoryMap {
     // Get the size of the map.
@@ -52,7 +17,7 @@ interface BaseNativeMemoryMap {
     val operationCounters: NativeMemoryMapOperationCounters?
 }
 
-// NativeMemoryMap is mapping of keys to values backed by a ConcurrentHashMap.
+// NativeMemoryMap is mapping of keys to values backed by a ConcurrentMap.
 // NativeMemoryMap uses NativeMemoryAllocator to allocate, resize, and free NativeMemoryBuffers.
 // Keys are stored as normal on-heap objects in the map.
 // Each value is serialized using NativeMemoryMapSerializer and copied into a NativeMemoryBuffer.
@@ -81,5 +46,39 @@ interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> : BaseNativeMemoryMap {
 
     // Get the entry set of the map.
     val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBuffer>>
+}
 
+// NativeMemoryMapSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryMap.
+interface NativeMemoryMapSerializer<VALUE_TYPE> {
+
+    // serialize value to a ByteArray
+    fun serializeToByteArray(value: VALUE_TYPE): ByteArray
+
+    // deserialize value from an OnHeapMemoryBuffer
+    fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): VALUE_TYPE
+}
+
+// NativeMemoryMapStats holds statistics information for a NativeMemoryMap.
+data class NativeMemoryMapStats(
+    // caffeineStats is populated only if using the caffeine map backend.
+    val caffeineStats: CacheStats? = null,
+)
+
+// NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
+interface NativeMemoryMapOperationCounters {
+    val numPutsNoChange: Number
+
+    val numPutsFreedBuffer: Number
+
+    val numPutsReusedBuffer: Number
+
+    val numPutsNewBuffer: Number
+
+    val numDeletesFreedBuffer: Number
+
+    val numDeletesNoChange: Number
+
+    val numGetsNullValue: Number
+
+    val numGetsNonNullValue: Number
 }
