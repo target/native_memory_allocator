@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Ticker
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.map.impl.CaffeineNativeMemoryMapImpl
 import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapImpl
-import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapWithOperationCountersImpl
+import com.target.oss.nativememoryallocator.map.impl.OperationCountedNativeMemoryMapImpl
 import com.target.oss.nativememoryallocator.map.impl.buildCaffeineCache
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -79,7 +79,7 @@ data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
         }
 
         return if (enableOperationCounters) {
-            NativeMemoryMapWithOperationCountersImpl(
+            OperationCountedNativeMemoryMapImpl(
                 nativeMemoryMap = nativeMemoryMap,
             )
         } else {

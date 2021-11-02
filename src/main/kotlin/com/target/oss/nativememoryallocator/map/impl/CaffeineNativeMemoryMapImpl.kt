@@ -7,8 +7,34 @@ import com.target.oss.nativememoryallocator.map.CaffeineConfigBuilder
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
 import mu.KotlinLogging
+import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
+
+class CaffeineConfigBuilderImpl(
+    var caffeine: Caffeine<Any, Any>,
+) : CaffeineConfigBuilder {
+
+    override fun expireAfterAccess(duration: Long, timeUnit: TimeUnit): CaffeineConfigBuilder {
+        caffeine = caffeine.expireAfterAccess(duration, timeUnit)
+        return this
+    }
+
+    override fun maximumSize(maximumSize: Long): CaffeineConfigBuilder {
+        caffeine = caffeine.maximumSize(maximumSize)
+        return this
+    }
+
+    override fun recordStats(): CaffeineConfigBuilder {
+        caffeine = caffeine.recordStats()
+        return this
+    }
+
+    override fun ticker(ticker: Ticker): CaffeineConfigBuilder {
+        caffeine = caffeine.ticker(ticker)
+        return this
+    }
+}
 
 class CaffeineEvictionListener<KEY_TYPE>(
     private val nativeMemoryAllocator: NativeMemoryAllocator,

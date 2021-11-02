@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.stats.CacheStats
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.map.BaseNativeMemoryMap
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
-import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapOperationCountersImpl
+import com.target.oss.nativememoryallocator.map.impl.OperationCountersImpl
 import io.micrometer.core.instrument.Tag
 import io.micrometer.core.instrument.Tags
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
@@ -151,8 +151,8 @@ class MicrometerMetricsSpec : Spek({
             val mapSizeValue = 42
             val caffeineEvictionCountValue = 43
 
-            val operationCounters = NativeMemoryMapOperationCountersImpl()
-            operationCounters.numPutsNoChanges.set(44)
+            val operationCounters = OperationCountersImpl()
+            operationCounters.numPutsNoChange.set(44)
             operationCounters.numPutsFreedBuffer.set(45)
             operationCounters.numPutsReusedBuffer.set(46)
             operationCounters.numPutsNewBuffer.set(47)
@@ -164,7 +164,7 @@ class MicrometerMetricsSpec : Spek({
             val meterNameToValue = mapOf(
                 "nativeMemoryMap.size" to mapSizeValue,
                 "nativeMemoryMap.caffeineEvictionCount" to caffeineEvictionCountValue,
-                "nativeMemoryMap.numPutsNoChange" to operationCounters.numPutsNoChanges.get(),
+                "nativeMemoryMap.numPutsNoChange" to operationCounters.numPutsNoChange.get(),
                 "nativeMemoryMap.numPutsFreedBuffer" to operationCounters.numPutsFreedBuffer.get(),
                 "nativeMemoryMap.numPutsReusedBuffer" to operationCounters.numPutsReusedBuffer.get(),
                 "nativeMemoryMap.numPutsNewBuffer" to operationCounters.numPutsNewBuffer.get(),

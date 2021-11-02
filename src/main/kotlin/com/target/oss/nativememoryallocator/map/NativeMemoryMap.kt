@@ -22,7 +22,7 @@ data class NativeMemoryMapStats(
 
 // NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
 interface NativeMemoryMapOperationCounters {
-    val numPutsNoChanges: Number
+    val numPutsNoChange: Number
 
     val numPutsFreedBuffer: Number
 

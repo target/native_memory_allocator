@@ -88,7 +88,7 @@ class MicrometerNativeMemoryMapMetrics(
                 name = "nativeMemoryMap.numPutsNoChange",
                 gaugeObject = this,
                 tags = tags,
-            ) { operationCounters.numPutsNoChanges.toDouble() }
+            ) { operationCounters.numPutsNoChange.toDouble() }
 
             meterRegistry.registerGauge(
                 name = "nativeMemoryMap.numPutsFreedBuffer",

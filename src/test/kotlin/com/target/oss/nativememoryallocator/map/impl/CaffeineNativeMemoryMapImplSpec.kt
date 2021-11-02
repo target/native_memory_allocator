@@ -10,7 +10,7 @@ import io.mockk.verify
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 
-class CaffeineNativeMemoryMapImplTest : Spek({
+class CaffeineNativeMemoryMapImplSpec : Spek({
     Feature("CaffeineNativeMemoryMapImpl") {
         Scenario("test CaffeineEvictionListener with RemovalCause.EXPLICIT") {
             lateinit var nativeMemoryAllocator: NativeMemoryAllocator

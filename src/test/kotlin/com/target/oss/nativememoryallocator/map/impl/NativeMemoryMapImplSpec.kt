@@ -15,9 +15,9 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 
-private class TestValueObject
+class NativeMemoryMapImplSpec : Spek({
+    class TestValueObject
 
-class NativeMemoryMapImplTest : Spek({
     Feature("NativeMemoryMapImpl") {
         Scenario("test initialization") {
             lateinit var testValueObjectNativeMemoryMapSerializer: NativeMemoryMapSerializer<TestValueObject>
