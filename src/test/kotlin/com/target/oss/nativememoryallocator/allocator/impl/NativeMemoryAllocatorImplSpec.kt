@@ -1,6 +1,5 @@
 package com.target.oss.nativememoryallocator.allocator.impl
 
-import com.target.oss.nativememoryallocator.allocator.impl.NativeMemoryAllocatorImpl
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.unsafe.UnsafeContainer
 import io.mockk.*
@@ -39,9 +38,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("initial nativeMemoryAllocator is correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(expectedNumPages, nativeMemoryAllocator.numFreePages())
-                assertEquals(expectedNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(0, nativeMemoryAllocator.numUsedPages())
+                assertEquals(expectedNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(expectedNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 verify(exactly = 1) {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
@@ -125,14 +126,17 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 }
 
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(1, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(1, nativeMemoryAllocator.numUsedPages)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(100, buffer.capacityBytes)
                 assertEquals(false, buffer.freed)
                 assertEquals(1, buffer.numPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
             }
             When("free buffer") {
                 nativeMemoryAllocator.freeNativeMemoryBuffer(
@@ -141,9 +145,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(0, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(0, buffer.capacityBytes)
@@ -163,9 +169,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 assertEquals(1, doubleFreeExceptions)
 
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(0, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(0, buffer.capacityBytes)
@@ -210,9 +218,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 }
 
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(3, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(3, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(10_000, buffer.capacityBytes)
@@ -227,9 +237,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(3, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(3, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(10_000, buffer.capacityBytes)
@@ -244,9 +256,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(3, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(3, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(10_500, buffer.capacityBytes)
@@ -261,9 +275,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 5, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(5, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 5, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(5, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(17_000, buffer.capacityBytes)
@@ -278,9 +294,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 2, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(2, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 2, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(2, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(4_097, buffer.capacityBytes)
@@ -292,9 +310,9 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(0, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(0, buffer.capacityBytes)
@@ -340,9 +358,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 }
 
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 2, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(2, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 2, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(2, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(5_000, buffer.capacityBytes)
@@ -357,9 +377,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(0, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.numUsedPages())
+                assertEquals(0, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(nativeMemorySizeBytes.toInt(), buffer.capacityBytes)
@@ -374,9 +396,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(1, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(1, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(4_096, buffer.capacityBytes)
@@ -396,9 +420,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             Then("resize throws exception, buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(1, resizeExceptions)
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(1, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(1, nativeMemoryAllocator.numUsedPages)
+                assertEquals(1, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(4_096, buffer.capacityBytes)
@@ -412,9 +438,11 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
-                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages())
-                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages())
-                assertEquals(0, nativeMemoryAllocator.numUsedPages())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(1, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(0, buffer.capacityBytes)

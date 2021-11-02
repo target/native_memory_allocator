@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Ticker
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.map.impl.CaffeineNativeMemoryMapImpl
 import com.target.oss.nativememoryallocator.map.impl.NativeMemoryMapImpl
+import com.target.oss.nativememoryallocator.map.impl.OperationCountedNativeMemoryMapImpl
 import com.target.oss.nativememoryallocator.map.impl.buildCaffeineCache
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -37,14 +38,16 @@ interface CaffeineConfigBuilder {
 data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
     val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     val nativeMemoryAllocator: NativeMemoryAllocator,
+    val enableOperationCounters: Boolean = false,
     val useThreadLocalOnHeapReadBuffer: Boolean = true,
     val threadLocalOnHeapReadBufferInitialCapacityBytes: Int = (256 * 1024),
     val backend: NativeMemoryMapBackend = NativeMemoryMapBackend.CONCURRENT_HASH_MAP,
     val caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit = {},
 ) {
 
-    fun build(): NativeMemoryMap<KEY_TYPE, VALUE_TYPE> =
-        when (backend) {
+    fun build(): NativeMemoryMap<KEY_TYPE, VALUE_TYPE> {
+
+        val nativeMemoryMap = when (backend) {
             NativeMemoryMapBackend.CONCURRENT_HASH_MAP -> {
                 NativeMemoryMapImpl(
                     valueSerializer = valueSerializer,
@@ -74,4 +77,13 @@ data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
                 )
             }
         }
+
+        return if (enableOperationCounters) {
+            OperationCountedNativeMemoryMapImpl(
+                nativeMemoryMap = nativeMemoryMap,
+            )
+        } else {
+            nativeMemoryMap
+        }
+    }
 }

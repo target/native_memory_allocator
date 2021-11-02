@@ -18,6 +18,12 @@ data class NativeMemoryAllocatorMetadata(
     @JsonProperty("num_used_pages")
     val numUsedPages: Int,
 
+    @JsonProperty("num_allocation_exceptions")
+    val numAllocationExceptions: Int,
+
+    @JsonProperty("num_free_exceptions")
+    val numFreeExceptions: Int,
+
     @JsonProperty("native_memory_size_bytes")
     val nativeMemorySizeBytes: Long,
 )
