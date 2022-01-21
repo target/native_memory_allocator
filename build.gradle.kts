@@ -16,8 +16,8 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.5.31"
-    id("com.jfrog.artifactory") version "4.24.20"
+    kotlin("jvm") version "1.6.10"
+    id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
 }
 
@@ -44,18 +44,18 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.12.5")
-    implementation("io.github.microutils:kotlin-logging:2.0.11")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
+    implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("org.objenesis:objenesis:3.2")
-    implementation("io.micrometer:micrometer-core:1.7.5")
-    api("com.github.ben-manes.caffeine:caffeine:3.0.4")
+    implementation("io.micrometer:micrometer-core:1.8.1")
+    api("com.github.ben-manes.caffeine:caffeine:3.0.5")
 
     testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
     testImplementation("org.spekframework.spek2:spek-runner-junit5:2.0.17")
-    testImplementation("io.mockk:mockk:1.12.0")
-    testImplementation(platform("org.junit:junit-bom:5.8.0"))
+    testImplementation("io.mockk:mockk:1.12.2")
+    testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("ch.qos.logback:logback-classic:1.2.6")
+    testImplementation("ch.qos.logback:logback-classic:1.2.10")
     testImplementation("com.google.guava:guava-testlib:31.0.1-jre")
 
 }
