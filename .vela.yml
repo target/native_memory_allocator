@@ -27,8 +27,20 @@ steps:
     template:
       name: build-release
       vars:
-        build_command: ./gradlew clean build --stacktrace
+        build_command: ./gradlew clean build jacocoTestReport --stacktrace
         build_release_image: library/openjdk:11-jdk
-  - name: slack
-    template:
-      name: slack
+  - name: check-pr-code-coverage
+    image: docker.target.com/search/pull-request-code-coverage
+    secrets:
+      - source: pull_request_api_key
+        target: plugin_gh_api_key
+    ruleset:
+      event:
+        - pull_request
+    pull: true
+    parameters:
+      coverage_file: build/reports/jacoco/test/jacocoTestReport.xml
+      coverage_type: jacoco
+      gh_api_base_url: https://git.target.com
+      source_dirs:
+        - src/main/kotlin

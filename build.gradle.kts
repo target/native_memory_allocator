@@ -19,6 +19,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
+    jacoco
 }
 
 apply(plugin = "nebula.release")
@@ -105,4 +106,16 @@ artifactory {
         })
     })
 
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+        csv.isEnabled = false
+        html.destination = file("${buildDir}/jacocoHtml")
+    }
 }
