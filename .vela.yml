@@ -21,6 +21,10 @@ secrets:
     key: TargetOSS/slack_webhook
     engine: native
     type: org
+  - name: pull_request_api_key
+    key: TargetOSS/pull_request_api_key
+    engine: native
+    type: org
 
 steps:
   - name: build-release
