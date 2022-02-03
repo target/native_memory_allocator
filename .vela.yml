@@ -37,7 +37,7 @@ steps:
     image: docker.target.com/search/pull-request-code-coverage
     secrets:
       - source: pull_request_api_key
-        target: plugin_gh_api_key
+        target: parameter_gh_api_key
     ruleset:
       event:
         - pull_request
