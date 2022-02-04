@@ -49,3 +49,6 @@ steps:
       gh_api_base_url: https://git.target.com
       source_dirs:
         - src/main/kotlin
+  - name: slack
+      template:
+        name: slack
