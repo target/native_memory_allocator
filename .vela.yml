@@ -47,9 +47,10 @@ steps:
       - java -version
       - pwd
       - find . -name jacocoTestReport.xml
-      - echo "end test step"
+      - ls -altrh
       - ls -l ./build/reports/jacoco/test/jacocoTestReport.xml
       - cat ./build/reports/jacoco/test/jacocoTestReport.xml
+      - echo "end test step"
   - name: check-pr-code-coverage
     image: docker.target.com/app/pull-request-code-coverage
     pull: true
@@ -61,6 +62,7 @@ steps:
         - pull_request
     detach: false
     parameters:
+      debug: true
       coverage_file: build/reports/jacoco/test/jacocoTestReport.xml
       coverage_type: jacoco
       gh_api_base_url: https://git.target.com
