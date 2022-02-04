@@ -46,9 +46,10 @@ steps:
       - top -b -n1
       - java -version
       - pwd
-      - find .
       - find . -name jacocoTestReport.xml
-      - end "begin test step"
+      - echo "end test step"
+      - ls -l ./build/reports/jacoco/test/jacocoTestReport.xml
+      - cat ./build/reports/jacoco/test/jacocoTestReport.xml
   - name: check-pr-code-coverage
     image: docker.target.com/app/pull-request-code-coverage
     pull: true
