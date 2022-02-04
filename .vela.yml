@@ -34,7 +34,7 @@ steps:
         build_command: ./gradlew clean build jacocoTestReport --stacktrace
         build_release_image: library/openjdk:11-jdk
   - name: check-pr-code-coverage
-    image: "docker.target.com/app/pull-request-code-coverage:latest"
+    image: docker.target.com/app/pull-request-code-coverage
     pull: true
     secrets:
       - source: pull_request_api_key
