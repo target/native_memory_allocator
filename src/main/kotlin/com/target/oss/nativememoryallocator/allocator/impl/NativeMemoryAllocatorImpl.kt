@@ -14,6 +14,7 @@ class NativeMemoryAllocatorImpl(
     override val pageSizeBytes: Int,
     override val nativeMemorySizeBytes: Long,
     zeroNativeMemoryOnStartup: Boolean,
+    someCondition: Boolean = false,
 ) : NativeMemoryAllocator {
 
     private val baseNativeMemoryPointer: Long
@@ -45,8 +46,10 @@ class NativeMemoryAllocatorImpl(
             totalNumPages = totalNumPages,
         )
 
-        if (false) {
+        if (someCondition) {
             println("hello")
+        } else {
+            println("world")
         }
     }
 
