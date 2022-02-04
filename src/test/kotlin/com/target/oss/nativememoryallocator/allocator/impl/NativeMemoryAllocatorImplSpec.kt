@@ -1,5 +1,6 @@
 package com.target.oss.nativememoryallocator.allocator.impl
 
+import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocatorMetadata
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.oss.nativememoryallocator.unsafe.UnsafeContainer
 import io.mockk.*
@@ -44,8 +45,84 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
                 assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
 
+                val expectedNativeMemoryAllocatorMetadata = NativeMemoryAllocatorMetadata(
+                    pageSizeBytes = pageSizeBytes,
+                    nextFreePageIndex = 0,
+                    numFreePages = expectedNumPages,
+                    totalNumPages = expectedNumPages,
+                    numUsedPages = 0,
+                    numAllocationExceptions = 0,
+                    numFreeExceptions = 0,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+                assertEquals(expectedNativeMemoryAllocatorMetadata, nativeMemoryAllocator.nativeMemoryAllocatorMetadata)
+
                 verify(exactly = 1) {
                     mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                }
+
+                verify(exactly = 0) {
+                    mockUnsafe.setMemory(any(), any(), any())
+                }
+            }
+            clearAllMocks()
+        }
+        Scenario("test initialization with zeroNativeMemoryOnStartup = true") {
+            lateinit var mockUnsafe: Unsafe
+            val pageSizeBytes = 4_096 // 4kb
+            val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+            val expectedNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+            val mockNativeMemoryPointer = 0x80000000
+            lateinit var nativeMemoryAllocator: NativeMemoryAllocatorImpl
+
+            Given("setup unsafe") {
+                mockUnsafe = mockk()
+                mockkObject(UnsafeContainer)
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+
+                every {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                } returns mockNativeMemoryPointer
+
+                every {
+                    mockUnsafe.setMemory(mockNativeMemoryPointer, nativeMemorySizeBytes, 0)
+                } returns Unit
+            }
+            When("construct nativeMemoryAllocator") {
+                nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    zeroNativeMemoryOnStartup = true,
+                )
+            }
+            Then("initial nativeMemoryAllocator is correct") {
+                assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
+                assertEquals(expectedNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(expectedNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
+                val expectedNativeMemoryAllocatorMetadata = NativeMemoryAllocatorMetadata(
+                    pageSizeBytes = pageSizeBytes,
+                    nextFreePageIndex = 0,
+                    numFreePages = expectedNumPages,
+                    totalNumPages = expectedNumPages,
+                    numUsedPages = 0,
+                    numAllocationExceptions = 0,
+                    numFreeExceptions = 0,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+                assertEquals(expectedNativeMemoryAllocatorMetadata, nativeMemoryAllocator.nativeMemoryAllocatorMetadata)
+
+                verify(exactly = 1) {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                }
+
+                verify(exactly = 1) {
+                    mockUnsafe.setMemory(mockNativeMemoryPointer, nativeMemorySizeBytes, 0)
                 }
             }
             clearAllMocks()
@@ -88,7 +165,7 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             clearAllMocks()
         }
-        Scenario("test allocation of 100 bytes, then free, then double free") {
+        Scenario("test allocation of 100 bytes, then free, then double free, then resize freed buffer") {
             lateinit var mockUnsafe: Unsafe
             val pageSizeBytes = 4_096 // 4kb
             val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
@@ -97,6 +174,7 @@ class NativeMemoryAllocatorImplSpec : Spek({
             lateinit var nativeMemoryAllocator: NativeMemoryAllocatorImpl
             lateinit var buffer: NativeMemoryBuffer
             var doubleFreeExceptions = 0
+            var resizeExceptions = 0
 
             Given("setup unsafe") {
                 mockUnsafe = mockk()
@@ -129,6 +207,18 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 assertEquals(totalNumPages - 1, nativeMemoryAllocator.numFreePages)
                 assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
                 assertEquals(1, nativeMemoryAllocator.numUsedPages)
+
+                val expectedNativeMemoryAllocatorMetadata = NativeMemoryAllocatorMetadata(
+                    pageSizeBytes = pageSizeBytes,
+                    nextFreePageIndex = 1,
+                    numFreePages = totalNumPages - 1,
+                    totalNumPages = totalNumPages,
+                    numUsedPages = 1,
+                    numAllocationExceptions = 0,
+                    numFreeExceptions = 0,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+                assertEquals(expectedNativeMemoryAllocatorMetadata, nativeMemoryAllocator.nativeMemoryAllocatorMetadata)
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(100, buffer.capacityBytes)
@@ -167,6 +257,31 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             Then("double free exception thrown, buffer and nativeMemoryAllocator state are correct") {
                 assertEquals(1, doubleFreeExceptions)
+
+                assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
+                assertEquals(pageSizeBytes, buffer.pageSizeBytes)
+                assertEquals(0, buffer.capacityBytes)
+                assertEquals(true, buffer.freed)
+                assertEquals(0, buffer.numPages)
+            }
+            When("resize buffer") {
+                try {
+                    nativeMemoryAllocator.resizeNativeMemoryBuffer(
+                        buffer = buffer,
+                        newCapacityBytes = 100,
+                    )
+                } catch (e: IllegalStateException) {
+                    resizeExceptions += 1
+                }
+            }
+            Then("resize freed exception thrown, buffer and nativeMemoryAllocator state are correct") {
+                assertEquals(1, resizeExceptions)
 
                 assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
                 assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
@@ -425,6 +540,19 @@ class NativeMemoryAllocatorImplSpec : Spek({
                 assertEquals(1, nativeMemoryAllocator.numUsedPages)
                 assertEquals(1, nativeMemoryAllocator.numAllocationExceptions)
                 assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
+                val expectedNativeMemoryAllocatorMetadata = NativeMemoryAllocatorMetadata(
+                    pageSizeBytes = pageSizeBytes,
+                    nextFreePageIndex = 1,
+                    numFreePages = totalNumPages - 1,
+                    totalNumPages = totalNumPages,
+                    numUsedPages = 1,
+                    numAllocationExceptions = 1,
+                    numFreeExceptions = 0,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+                assertEquals(expectedNativeMemoryAllocatorMetadata, nativeMemoryAllocator.nativeMemoryAllocatorMetadata)
+
 
                 assertEquals(pageSizeBytes, buffer.pageSizeBytes)
                 assertEquals(4_096, buffer.capacityBytes)
