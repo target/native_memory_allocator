@@ -42,6 +42,7 @@ steps:
     ruleset:
       event:
         - pull_request
+    detach: false
     parameters:
       debug: true
       coverage_file: build/reports/jacoco/test/jacocoTestReport.xml
