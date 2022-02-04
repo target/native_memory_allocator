@@ -33,6 +33,22 @@ steps:
       vars:
         build_command: ./gradlew clean build jacocoTestReport --stacktrace
         build_release_image: library/openjdk:11-jdk
+  - name: test-step
+    image: library/openjdk:11-jdk
+    pull: not_present
+    ruleset:
+      event: pull_request
+    commands:
+      - echo "begin test step"
+      - echo "${VELA_REPO_NAME%-v*}"
+      - echo "${VELA_BUILD_TAG##v}"
+      - lscpu
+      - top -b -n1
+      - java -version
+      - pwd
+      - find .
+      - find . -name jacocoTestReport.xml
+      - end "begin test step"
   - name: check-pr-code-coverage
     image: docker.target.com/app/pull-request-code-coverage
     pull: true
