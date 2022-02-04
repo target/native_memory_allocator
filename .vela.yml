@@ -50,5 +50,5 @@ steps:
       source_dirs:
         - src/main/kotlin
   - name: slack
-      template:
-        name: slack
+    template:
+      name: slack
