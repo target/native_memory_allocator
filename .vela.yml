@@ -34,14 +34,14 @@ steps:
         build_command: ./gradlew clean build jacocoTestReport --stacktrace
         build_release_image: library/openjdk:11-jdk
   - name: check-pr-code-coverage
-    image: docker.target.com/search/pull-request-code-coverage
+    image: "docker.target.com/app/pull-request-code-coverage:latest"
+    pull: true
     secrets:
       - source: pull_request_api_key
-        target: parameter_gh_api_key
+        target: plugin_gh_api_key
     ruleset:
       event:
         - pull_request
-    pull: true
     parameters:
       debug: true
       coverage_file: build/reports/jacoco/test/jacocoTestReport.xml
