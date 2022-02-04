@@ -44,6 +44,10 @@ class NativeMemoryAllocatorImpl(
             pageSizeBytes = pageSizeBytes,
             totalNumPages = totalNumPages,
         )
+
+        if (false) {
+            println("hello")
+        }
     }
 
     // for unit test only
