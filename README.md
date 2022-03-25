@@ -12,7 +12,7 @@ This project provides the following components:
   * Breaks this block into pages of configurable size and maintains a list of free pages
   * Supports operations to allocate, resize, and free native memory buffers similar to the malloc, realloc, and free functions in C
   * Advantages of this design:
-    * All allocate, resize, and free operations after startup are very fast because they do native-memory allocation or free operations
+    * All allocate, resize, and free operations after startup are very fast because they do not do native-memory allocation or free operations
     * Fragmentation is not an issue because OffHeapMemoryBuffer has no requirement for memory pages to be contiguous
 * Buffer
   * Supports OnHeapMemoryBuffer as a normal on-heap byte array
