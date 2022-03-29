@@ -20,6 +20,7 @@ plugins {
     id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
     jacoco
+    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 apply(plugin = "nebula.release")
@@ -58,7 +59,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("ch.qos.logback:logback-classic:1.2.10")
     testImplementation("com.google.guava:guava-testlib:31.0.1-jre")
-
 }
 
 tasks.withType<KotlinCompile> {

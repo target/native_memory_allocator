@@ -10,9 +10,21 @@ import com.target.oss.nativememoryallocator.map.NativeMemoryMapSerializer
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
 import java.util.concurrent.ConcurrentMap
 
-// All non-private methods in this class are safe for use by multiple threads.
-// put() and get() manage synchronization using ConcurrentMap.compute() to
-// ensure serialized access to a particular key/value mapping.
+/**
+ * This class is part of the implementation of NativeMemoryMap and should not be used directly.
+ *
+ * All non-private methods in this class are safe for use by multiple threads.
+ *
+ * [put] uses [ConcurrentMap.compute] to ensure serialized access to a particular key/value mapping.
+ *
+ * [get] uses [ConcurrentMap.computeIfPresent] to ensure serialized access to a particular key/value mapping.
+ *
+ * @param valueSerializer [NativeMemoryMapSerializer] for serializing values.
+ * @param nativeMemoryAllocator instance used to allocate and free value storage buffers.
+ * @param useThreadLocalOnHeapReadBuffer if true enable [ThreadLocal] storage of on-heap read buffers.
+ * @param threadLocalOnHeapReadBufferInitialCapacityBytes initial capacity in bytes for [ThreadLocal] on-heap read buffers.
+ * @param cacheMap [ConcurrentMap] of keys to [NativeMemoryBuffer] backing this map instance.
+ */
 class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
@@ -71,7 +83,9 @@ class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         return (put(key = key, value = null) == NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER)
     }
 
-    // not private for unit test
+    /**
+     * Non-private for unit test only.
+     */
     val threadLocalHeapReadBuffer =
         if (useThreadLocalOnHeapReadBuffer) {
             ThreadLocal.withInitial {

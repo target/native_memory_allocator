@@ -4,7 +4,11 @@ import com.target.oss.nativememoryallocator.map.NativeMemoryMap
 import com.target.oss.nativememoryallocator.map.NativeMemoryMapOperationCounters
 import java.util.concurrent.atomic.AtomicLong
 
-// Not using data class because AtomicLong does not implement equals().
+/**
+ * Implementation of [NativeMemoryMapOperationCounters].
+ *
+ * Note this is not a data class because [AtomicLong] does not implement [Object.equals].
+ */
 class OperationCountersImpl(
     override val numPutsNoChange: AtomicLong = AtomicLong(0),
     override val numPutsFreedBuffer: AtomicLong = AtomicLong(0),
@@ -16,12 +20,25 @@ class OperationCountersImpl(
     override val numGetsNonNullValue: AtomicLong = AtomicLong(0),
 ) : NativeMemoryMapOperationCounters
 
+/**
+ * This class is part of the implementation of NativeMemoryMap and should not be used directly.
+ *
+ * Implementation of [NativeMemoryMap] supporting operation counters.
+ *
+ * @param nativeMemoryMap [NativeMemoryMap] instance for delegation.
+ */
 class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 
+    /**
+     * [NativeMemoryMapOperationCounters] instance.
+     */
     override val operationCounters = OperationCountersImpl()
 
+    /**
+     * Delegate to [NativeMemoryMap.get] and then update [operationCounters].
+     */
     override fun get(key: KEY_TYPE): VALUE_TYPE? {
         val getResult = nativeMemoryMap.get(key = key)
 
@@ -36,6 +53,9 @@ class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         return getResult
     }
 
+    /**
+     * Delegate to [NativeMemoryMap.put] and then update [operationCounters].
+     */
     override fun put(key: KEY_TYPE, value: VALUE_TYPE?): NativeMemoryMap.PutResult {
         val putResult = nativeMemoryMap.put(key = key, value = value)
 
@@ -51,6 +71,9 @@ class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         return putResult
     }
 
+    /**
+     * Delegate to [NativeMemoryMap.delete] and then update [operationCounters].
+     */
     override fun delete(key: KEY_TYPE): Boolean {
         val deleteResult = nativeMemoryMap.delete(key = key)
 

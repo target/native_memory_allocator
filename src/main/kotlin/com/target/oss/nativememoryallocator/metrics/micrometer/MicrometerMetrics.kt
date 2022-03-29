@@ -20,7 +20,13 @@ private fun <T> MeterRegistry.registerGauge(
     ).tags(tags).register(this)
 }
 
-// Register Micrometer metrics for the specified NativeMemoryAllocator.
+/**
+ * Register Micrometer metrics for the specified [NativeMemoryAllocator].
+ *
+ * @param nativeMemoryAllocator [NativeMemoryAllocator] instance.
+ * @param meterRegistry [MeterRegistry] instance for metrics registration.
+ * @param tags set of custom tags.
+ */
 class MicrometerNativeMemoryAllocatorMetrics(
     nativeMemoryAllocator: NativeMemoryAllocator,
     meterRegistry: MeterRegistry,
@@ -59,7 +65,13 @@ class MicrometerNativeMemoryAllocatorMetrics(
     }
 }
 
-// Register Micrometer metrics for the specified NativeMemoryMap.
+/**
+ * Register Micrometer metrics for the specified NativeMemoryMap.
+ *
+ * @param nativeMemoryMap [BaseNativeMemoryMap] instance
+ * @param meterRegistry [MeterRegistry] instance for metrics registration.
+ * @param tags set of custom tags.
+ */
 class MicrometerNativeMemoryMapMetrics(
     nativeMemoryMap: BaseNativeMemoryMap,
     meterRegistry: MeterRegistry,
