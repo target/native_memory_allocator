@@ -11,7 +11,10 @@ import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
 
-class CaffeineConfigBuilderImpl(
+/**
+ * Implementation of [CaffeineConfigBuilder].
+ */
+internal class CaffeineConfigBuilderImpl(
     var caffeine: Caffeine<Any, Any>,
 ) : CaffeineConfigBuilder {
 
@@ -36,10 +39,24 @@ class CaffeineConfigBuilderImpl(
     }
 }
 
-class CaffeineEvictionListener<KEY_TYPE>(
+/**
+ * [RemovalListener] for caffeine eviction.
+ *
+ * Frees [NativeMemoryBuffer] when eviction occurs.
+ *
+ * @param nativeMemoryAllocator used to freeing value storage buffers.
+ */
+internal class CaffeineEvictionListener<KEY_TYPE>(
     private val nativeMemoryAllocator: NativeMemoryAllocator,
 ) : RemovalListener<KEY_TYPE, NativeMemoryBuffer> {
 
+    /**
+     * Callback from caffeine when eviction occurrs.
+     *
+     * @param key key object
+     * @param value [NativeMemoryBuffer] object
+     * @param cause [RemovalCause] object
+     */
     override fun onRemoval(key: KEY_TYPE?, value: NativeMemoryBuffer?, cause: RemovalCause?) {
         try {
             if ((cause?.wasEvicted() == true) && (value?.freed == false)) {
@@ -52,7 +69,14 @@ class CaffeineEvictionListener<KEY_TYPE>(
 
 }
 
-fun <KEY_TYPE> buildCaffeineCache(
+/**
+ * Build a caffeine [Cache] instance.
+ *
+ * @param nativeMemoryAllocator used to allocate and free value storage buffers.
+ * @param caffeineConfigFunction caffeine configuration function used for builder pattern.
+ * @return [Cache] caffeine cache
+ */
+internal fun <KEY_TYPE> buildCaffeineCache(
     nativeMemoryAllocator: NativeMemoryAllocator,
     caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit,
 ): Cache<KEY_TYPE, NativeMemoryBuffer> {
@@ -72,11 +96,20 @@ fun <KEY_TYPE> buildCaffeineCache(
         .build()
 }
 
-class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+/**
+ * Caffeine-backed implementation of [NativeMemoryMap].
+ *
+ * @param caffeineCache caffeine cache instance
+ * @param nativeMemoryMap [NativeMemoryMap] instance for delegation
+ */
+internal class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val caffeineCache: Cache<KEY_TYPE, NativeMemoryBuffer>,
     nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 
+    /**
+     * Override stats to include caffeine statistics.
+     */
     override val stats: NativeMemoryMapStats
         get() = NativeMemoryMapStats(
             caffeineStats = caffeineCache.stats(),

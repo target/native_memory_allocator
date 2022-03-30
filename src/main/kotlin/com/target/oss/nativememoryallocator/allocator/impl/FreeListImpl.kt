@@ -5,7 +5,14 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
-class FreeListImpl(
+/**
+ * Implementation of [FreeList].
+ *
+ * @param baseNativeMemoryPointer base native memory address
+ * @param pageSizeBytes page size bytes
+ * @param totalNumPages total number of pages
+ */
+internal class FreeListImpl(
     baseNativeMemoryPointer: Long,
     pageSizeBytes: Int,
     override val totalNumPages: Int,
@@ -34,7 +41,9 @@ class FreeListImpl(
         logger.info { "nextFreePageIndex = $nextFreePageIndex numFreePages = $numFreePages" }
     }
 
-    // for unit test only
+    /**
+     * For unit test only.
+     */
     fun freePageArray(): LongArray = freePageArray
 
     @Synchronized
