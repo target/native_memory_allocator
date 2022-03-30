@@ -10,8 +10,6 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 /**
- * This class is part of the implementation of NativeMemoryAllocator and should not be used directly.
- *
  * Implementation of [NativeMemoryAllocator].
  *
  * All fields in this class are immutable except freeList.  freeList manages its own synchronization.
@@ -20,7 +18,7 @@ private val logger = KotlinLogging.logger {}
  * @param nativeMemorySizeBytes total native memory size bytes.
  * @param zeroNativeMemoryOnStartup If true write zeros to the block of native memory on construction.
  */
-class NativeMemoryAllocatorImpl(
+internal class NativeMemoryAllocatorImpl(
     override val pageSizeBytes: Int,
     override val nativeMemorySizeBytes: Long,
     zeroNativeMemoryOnStartup: Boolean,

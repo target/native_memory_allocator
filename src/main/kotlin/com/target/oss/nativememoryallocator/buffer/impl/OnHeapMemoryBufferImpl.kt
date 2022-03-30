@@ -4,13 +4,11 @@ import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import java.nio.ByteBuffer
 
 /**
- * This class is part of the buffer implementation and should not be used directly.
- *
  * Implementation of [OnHeapMemoryBuffer].
  *
  * @param initialCapacityBytes initial capacity bytes.
  */
-class OnHeapMemoryBufferImpl(
+internal class OnHeapMemoryBufferImpl(
     initialCapacityBytes: Int,
 ) : OnHeapMemoryBuffer {
 

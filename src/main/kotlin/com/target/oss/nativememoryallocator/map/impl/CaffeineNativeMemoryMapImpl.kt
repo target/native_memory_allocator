@@ -14,7 +14,7 @@ private val logger = KotlinLogging.logger {}
 /**
  * Implementation of [CaffeineConfigBuilder].
  */
-class CaffeineConfigBuilderImpl(
+internal class CaffeineConfigBuilderImpl(
     var caffeine: Caffeine<Any, Any>,
 ) : CaffeineConfigBuilder {
 
@@ -46,7 +46,7 @@ class CaffeineConfigBuilderImpl(
  *
  * @param nativeMemoryAllocator used to freeing value storage buffers.
  */
-class CaffeineEvictionListener<KEY_TYPE>(
+internal class CaffeineEvictionListener<KEY_TYPE>(
     private val nativeMemoryAllocator: NativeMemoryAllocator,
 ) : RemovalListener<KEY_TYPE, NativeMemoryBuffer> {
 
@@ -76,7 +76,7 @@ class CaffeineEvictionListener<KEY_TYPE>(
  * @param caffeineConfigFunction caffeine configuration function used for builder pattern.
  * @return [Cache] caffeine cache
  */
-fun <KEY_TYPE> buildCaffeineCache(
+internal fun <KEY_TYPE> buildCaffeineCache(
     nativeMemoryAllocator: NativeMemoryAllocator,
     caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit,
 ): Cache<KEY_TYPE, NativeMemoryBuffer> {
@@ -97,14 +97,12 @@ fun <KEY_TYPE> buildCaffeineCache(
 }
 
 /**
- * This class is part of the implementation of NativeMemoryMap and should not be used directly.
- *
  * Caffeine-backed implementation of [NativeMemoryMap].
  *
  * @param caffeineCache caffeine cache instance
  * @param nativeMemoryMap [NativeMemoryMap] instance for delegation
  */
-class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val caffeineCache: Cache<KEY_TYPE, NativeMemoryBuffer>,
     nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {

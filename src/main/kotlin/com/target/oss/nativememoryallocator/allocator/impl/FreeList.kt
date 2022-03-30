@@ -3,15 +3,13 @@ package com.target.oss.nativememoryallocator.allocator.impl
 import com.target.oss.nativememoryallocator.unsafe.NativeMemoryPage
 
 /**
- * This interface is part of the implementation of NativeMemoryAllocator and should not be used directly.
- *
  * An array of MemoryPages that are available for allocation.
  * Pages are allocated by removing from the left side of the array,
  * and free pages are put back onto the left side of the array (LIFO order).
  *
  * The FreeList is synchronized so multiple threads can use NativeMemoryAllocator concurrently.
  */
-interface FreeList {
+internal interface FreeList {
 
     /**
      * The total number of pages managed by the FreeList.

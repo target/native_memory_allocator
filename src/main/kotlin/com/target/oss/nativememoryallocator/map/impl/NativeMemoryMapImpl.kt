@@ -11,8 +11,6 @@ import com.target.oss.nativememoryallocator.map.NativeMemoryMapStats
 import java.util.concurrent.ConcurrentMap
 
 /**
- * This class is part of the implementation of NativeMemoryMap and should not be used directly.
- *
  * All non-private methods in this class are safe for use by multiple threads.
  *
  * [put] uses [ConcurrentMap.compute] to ensure serialized access to a particular key/value mapping.
@@ -25,7 +23,7 @@ import java.util.concurrent.ConcurrentMap
  * @param threadLocalOnHeapReadBufferInitialCapacityBytes initial capacity in bytes for [ThreadLocal] on-heap read buffers.
  * @param cacheMap [ConcurrentMap] of keys to [NativeMemoryBuffer] backing this map instance.
  */
-class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
     useThreadLocalOnHeapReadBuffer: Boolean,

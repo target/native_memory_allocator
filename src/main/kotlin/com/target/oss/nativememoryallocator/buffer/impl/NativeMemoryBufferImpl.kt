@@ -5,8 +5,6 @@ import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.oss.nativememoryallocator.unsafe.NativeMemoryPage
 
 /**
- * This class is part of the buffer implementation and should not be used directly.
- *
  * Implementation of [NativeMemoryBuffer].
  *
  * @param pageSizeBytes page size bytes
@@ -14,7 +12,7 @@ import com.target.oss.nativememoryallocator.unsafe.NativeMemoryPage
  * @param freed true if this object has been freed, false otherwise.
  * @param pages [ArrayList] of [NativeMemoryPage]
  */
-class NativeMemoryBufferImpl(
+internal class NativeMemoryBufferImpl(
     override val pageSizeBytes: Int,
     override var capacityBytes: Int,
     override var freed: Boolean,

@@ -6,15 +6,13 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 /**
- * This class is part of the implementation of NativeMemoryAllocator and should not be used directly.
- *
  * Implementation of [FreeList].
  *
  * @param baseNativeMemoryPointer base native memory address
  * @param pageSizeBytes page size bytes
  * @param totalNumPages total number of pages
  */
-class FreeListImpl(
+internal class FreeListImpl(
     baseNativeMemoryPointer: Long,
     pageSizeBytes: Int,
     override val totalNumPages: Int,

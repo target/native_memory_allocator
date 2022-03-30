@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong
  *
  * Note this is not a data class because [AtomicLong] does not implement [Object.equals].
  */
-class OperationCountersImpl(
+internal class OperationCountersImpl(
     override val numPutsNoChange: AtomicLong = AtomicLong(0),
     override val numPutsFreedBuffer: AtomicLong = AtomicLong(0),
     override val numPutsReusedBuffer: AtomicLong = AtomicLong(0),
@@ -21,13 +21,11 @@ class OperationCountersImpl(
 ) : NativeMemoryMapOperationCounters
 
 /**
- * This class is part of the implementation of NativeMemoryMap and should not be used directly.
- *
  * Implementation of [NativeMemoryMap] supporting operation counters.
  *
  * @param nativeMemoryMap [NativeMemoryMap] instance for delegation.
  */
-class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     private val nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 

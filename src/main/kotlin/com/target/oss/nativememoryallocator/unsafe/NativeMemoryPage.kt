@@ -5,7 +5,7 @@ package com.target.oss.nativememoryallocator.unsafe
  *
  * @property startAddress starting native memory address for this page.
  */
-data class NativeMemoryPage(
+internal data class NativeMemoryPage(
     val startAddress: Long,
 ) {
     /**

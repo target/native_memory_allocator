@@ -96,7 +96,7 @@ interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> : BaseNativeMemoryMap {
 }
 
 /**
- * NativeMemoryMapSerializer is an interface used to serialize and deserialize values stored in a NativeMemoryMap.
+ * Interface used to serialize and deserialize values stored in a NativeMemoryMap.
  */
 interface NativeMemoryMapSerializer<VALUE_TYPE> {
 
@@ -128,7 +128,9 @@ data class NativeMemoryMapStats(
     val caffeineStats: CacheStats? = null,
 )
 
-// NativeMemoryMapOperationCounters holds counters of various operation types on a NativeMemoryMap.
+/**
+ * Holds counters of various operation types on a NativeMemoryMap.
+ */
 interface NativeMemoryMapOperationCounters {
 
     /**

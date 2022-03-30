@@ -8,7 +8,7 @@ import sun.misc.Unsafe
  *
  * Uses [UnsafeUtils] to get the [Unsafe] instance.
  */
-object UnsafeContainer {
+internal object UnsafeContainer {
     /**
      * Unsafe instance.
      */
