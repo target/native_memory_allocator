@@ -102,6 +102,6 @@ internal class FreeListImpl(
 
     @Synchronized
     override fun freePages(pages: List<NativeMemoryPage>) {
-        pages.asReversed().forEach { page -> freePage(page) }
+        pages.forEach { page -> freePage(page) }
     }
 }

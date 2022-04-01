@@ -143,9 +143,7 @@ class FreeListSpec : Spek({
 
             val expectedAllocations = emptyList<NativeMemoryPage>()
 
-            val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
-                baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
-            }
+
 
             Given("setup freeList") {
                 freeList = FreeListImpl(
@@ -162,6 +160,10 @@ class FreeListSpec : Spek({
                 }
             }
             Then("freeList state is correct") {
+                val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
+                    baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
+                }.reversedArray()
+
                 assertEquals(expectedAllocations, pagesAllocated)
                 assertEquals(1, exceptionsCaught)
 
@@ -217,7 +219,8 @@ class FreeListSpec : Spek({
             Then("freeList state is correct") {
                 val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
                     baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
-                }
+                }.reversedArray()
+
                 assertTrue(expectedFreePageArray.contentEquals(freeList.freePageArray()))
                 assertEquals(0, freeList.nextFreePageIndex())
                 assertEquals(totalNumPages, freeList.totalNumPages)
@@ -328,10 +331,10 @@ class FreeListSpec : Spek({
                 assertEquals(2, freeList.numUsedPages())
             }
             When("free 3 pages") {
-                freeList.freePages(listOf(pagesAllocated[0], pagesAllocated[1]))
+                freeList.freePages(listOf(pagesAllocated[1], pagesAllocated[0]))
 
                 try {
-                    freeList.freePages(listOf(pagesAllocated[1]))
+                    freeList.freePages(listOf(pagesAllocated[0]))
                 } catch (e: IllegalStateException) {
                     numFreeExceptions++
                 }
@@ -342,6 +345,7 @@ class FreeListSpec : Spek({
                 val expectedFreePageArray = LongArray(totalNumPages) { pageNumber ->
                     baseNativeMemoryPointer + (pageNumber * pageSizeBytes)
                 }
+
                 assertTrue(expectedFreePageArray.contentEquals(freeList.freePageArray()))
 
                 assertEquals(0, freeList.nextFreePageIndex())

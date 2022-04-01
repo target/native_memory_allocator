@@ -1,7 +1,7 @@
 package com.target.oss.nativememoryallocator.map
 
 import com.github.benmanes.caffeine.cache.stats.CacheStats
-import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBufferMetadata
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 
 /**
@@ -86,13 +86,18 @@ interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> : BaseNativeMemoryMap {
     fun get(key: KEY_TYPE): VALUE_TYPE?
 
     /**
-     * [Set] of [Map.Entry] for the map.
+     * [Set] of [KEY_TYPE] for the map.
      *
-     * Note that there is no synchronization of [NativeMemoryBuffer] instances after this property is read.
-     *
-     * It is not recommended to read or write map values using this property.  Use [get] or [put] instead as they handle synchronization.
+     * @return [Set] of [KEY_TYPE]
      */
-    val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBuffer>>
+    val keys: Set<KEY_TYPE>
+
+    /**
+     * [Set] of [Map.Entry] for the map.  Entries are returned as read-only [NativeMemoryBufferMetadata].
+     *
+     * @return [Set] of [Map.Entry] for the map
+     */
+    val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBufferMetadata>>
 }
 
 /**

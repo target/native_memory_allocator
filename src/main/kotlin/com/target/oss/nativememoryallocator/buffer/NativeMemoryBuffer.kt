@@ -1,11 +1,9 @@
 package com.target.oss.nativememoryallocator.buffer
 
 /**
- * A list of native memory pages, with methods to read and write the native memory contents.
- *
- * This class is not synchronized - each instance should be used in a single thread, or the user must provide synchronization.
+ * Read-only metadata for [NativeMemoryBuffer].
  */
-interface NativeMemoryBuffer {
+interface NativeMemoryBufferMetadata {
 
     /**
      * Page size in bytes.
@@ -26,6 +24,15 @@ interface NativeMemoryBuffer {
      * Number of pages in this object.
      */
     val numPages: Int
+
+}
+
+/**
+ * A list of native memory pages, with methods to read and write the native memory contents.
+ *
+ * This class is not synchronized - each instance should be used in a single thread, or the user must provide synchronization.
+ */
+interface NativeMemoryBuffer : NativeMemoryBufferMetadata {
 
     /**
      * Read a byte at the specified [offset].
