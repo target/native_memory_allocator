@@ -2,6 +2,7 @@ package com.target.oss.nativememoryallocator.map.impl
 
 import com.target.oss.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.oss.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.oss.nativememoryallocator.buffer.NativeMemoryBufferMetadata
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.oss.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.oss.nativememoryallocator.map.NativeMemoryMap
@@ -122,7 +123,10 @@ internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
         }
     }
 
-    override val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBuffer>>
+    override val keys: Set<KEY_TYPE>
+        get() = cacheMap.keys
+
+    override val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBufferMetadata>>
         get() = cacheMap.entries
 
     override val size: Int

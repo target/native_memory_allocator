@@ -37,6 +37,7 @@ class NativeMemoryMapImplSpec : Spek({
             }
             Then("initial state is correct") {
                 assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertTrue(nativeMemoryMap.keys.isEmpty())
                 assertEquals(0, nativeMemoryMap.size)
             }
             clearAllMocks()
@@ -64,6 +65,7 @@ class NativeMemoryMapImplSpec : Spek({
             Then("state is correct") {
                 assertEquals(NativeMemoryMap.PutResult.NO_CHANGE, putResult)
                 assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertTrue(nativeMemoryMap.keys.isEmpty())
                 assertEquals(0, nativeMemoryMap.size)
             }
             clearAllMocks()
@@ -117,6 +119,7 @@ class NativeMemoryMapImplSpec : Spek({
                     ),
                     nativeMemoryMap.entries
                 )
+                assertEquals(setOf(1), nativeMemoryMap.keys)
                 assertEquals(1, nativeMemoryMap.size)
 
                 verify(exactly = 1) {
@@ -197,6 +200,7 @@ class NativeMemoryMapImplSpec : Spek({
                     ),
                     nativeMemoryMap.entries
                 )
+                assertEquals(setOf(1), nativeMemoryMap.keys)
                 assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
@@ -292,6 +296,7 @@ class NativeMemoryMapImplSpec : Spek({
                     ),
                     nativeMemoryMap.entries
                 )
+                assertEquals(setOf(1), nativeMemoryMap.keys)
                 assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
@@ -410,6 +415,7 @@ class NativeMemoryMapImplSpec : Spek({
                     ),
                     nativeMemoryMap.entries
                 )
+                assertEquals(setOf(1), nativeMemoryMap.keys)
                 assertEquals(1, nativeMemoryMap.size)
                 assertEquals(getDeserializedValue, getResult)
 
@@ -492,6 +498,7 @@ class NativeMemoryMapImplSpec : Spek({
                 assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
                 assertEquals(NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER, putResult2)
                 assertTrue(nativeMemoryMap.entries.isEmpty())
+                assertTrue(nativeMemoryMap.keys.isEmpty())
                 assertEquals(0, nativeMemoryMap.size)
 
                 verify(exactly = 1) {
