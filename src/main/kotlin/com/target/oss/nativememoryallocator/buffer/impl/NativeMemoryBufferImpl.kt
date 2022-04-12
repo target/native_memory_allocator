@@ -16,7 +16,7 @@ internal class NativeMemoryBufferImpl(
     override val pageSizeBytes: Int,
     override var capacityBytes: Int,
     override var freed: Boolean,
-    private val pages: ArrayList<NativeMemoryPage>,
+    val pages: ArrayList<NativeMemoryPage>,
 ) : NativeMemoryBuffer {
 
     override val numPages: Int

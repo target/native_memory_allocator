@@ -6,7 +6,7 @@ package com.target.oss.nativememoryallocator.unsafe
  * @property startAddress starting native memory address for this page.
  */
 internal data class NativeMemoryPage(
-    private val startAddress: Long,
+    val startAddress: Long,
 ) {
     /**
      * Read a byte of native memory at the specified [offset] into this page.
