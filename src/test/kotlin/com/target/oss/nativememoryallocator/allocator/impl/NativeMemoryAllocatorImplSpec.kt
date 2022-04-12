@@ -579,5 +579,131 @@ class NativeMemoryAllocatorImplSpec : Spek({
             }
             clearAllMocks()
         }
+        Scenario("test allocation of negative capacity") {
+            lateinit var mockUnsafe: Unsafe
+            val pageSizeBytes = 4_096 // 4kb
+            val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+            val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+            val mockNativeMemoryPointer = 0x80000000
+            lateinit var nativeMemoryAllocator: NativeMemoryAllocatorImpl
+            var buffer: NativeMemoryBuffer? = null
+            var allocateNativeMemoryBufferExceptions = 0
+
+            Given("setup unsafe") {
+                mockUnsafe = mockk()
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+
+                every {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                } returns mockNativeMemoryPointer
+            }
+            When("construct nativeMemoryAllocator and allocate a buffer") {
+                nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    zeroNativeMemoryOnStartup = false,
+                )
+
+                try {
+                    buffer = nativeMemoryAllocator.allocateNativeMemoryBuffer(
+                        capacityBytes = -1,
+                    )
+                } catch (e: IllegalArgumentException) {
+                    ++allocateNativeMemoryBufferExceptions
+                }
+            }
+            Then("buffer and nativeMemoryAllocator state are correct") {
+                verify(exactly = 1) {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                }
+
+                assertEquals(1, allocateNativeMemoryBufferExceptions)
+                assertEquals(null, buffer)
+
+                assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
+                assertEquals(totalNumPages, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(0, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+            }
+            clearAllMocks()
+        }
+        Scenario("test allocation of 10_000 bytes, then resize to negative value") {
+            lateinit var mockUnsafe: Unsafe
+            val pageSizeBytes = 4_096 // 4kb
+            val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+            val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+            val mockNativeMemoryPointer = 0x80000000
+            lateinit var nativeMemoryAllocator: NativeMemoryAllocatorImpl
+            lateinit var buffer: NativeMemoryBuffer
+            var resizeNativeMemoryBufferExceptions = 0
+
+            Given("setup unsafe") {
+                mockUnsafe = mockk()
+                every {
+                    UnsafeContainer.unsafe
+                } returns mockUnsafe
+
+                every {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                } returns mockNativeMemoryPointer
+            }
+            When("construct nativeMemoryAllocator and allocate a buffer") {
+                nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    zeroNativeMemoryOnStartup = false,
+                )
+
+                buffer = nativeMemoryAllocator.allocateNativeMemoryBuffer(
+                    capacityBytes = 10_000,
+                )
+            }
+            Then("buffer and nativeMemoryAllocator state are correct") {
+                verify(exactly = 1) {
+                    mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+                }
+
+                assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
+                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(3, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
+                assertEquals(pageSizeBytes, buffer.pageSizeBytes)
+                assertEquals(10_000, buffer.capacityBytes)
+                assertEquals(false, buffer.freed)
+                assertEquals(3, buffer.numPages)
+            }
+            When("resize to -1") {
+                try {
+                    nativeMemoryAllocator.resizeNativeMemoryBuffer(
+                        buffer = buffer,
+                        newCapacityBytes = -1,
+                    )
+                } catch (e: IllegalArgumentException) {
+                    ++resizeNativeMemoryBufferExceptions
+                }
+            }
+            Then("buffer and nativeMemoryAllocator state are correct") {
+                assertEquals(1, resizeNativeMemoryBufferExceptions)
+                assertEquals(mockNativeMemoryPointer, nativeMemoryAllocator.baseNativeMemoryPointer())
+                assertEquals(totalNumPages - 3, nativeMemoryAllocator.numFreePages)
+                assertEquals(totalNumPages, nativeMemoryAllocator.totalNumPages)
+                assertEquals(3, nativeMemoryAllocator.numUsedPages)
+                assertEquals(0, nativeMemoryAllocator.numAllocationExceptions)
+                assertEquals(0, nativeMemoryAllocator.numFreeExceptions)
+
+                assertEquals(pageSizeBytes, buffer.pageSizeBytes)
+                assertEquals(10_000, buffer.capacityBytes)
+                assertEquals(false, buffer.freed)
+                assertEquals(3, buffer.numPages)
+            }
+            clearAllMocks()
+        }
     }
 })

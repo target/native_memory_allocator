@@ -93,7 +93,15 @@ internal class NativeMemoryAllocatorImpl(
             (capacityBytes / pageSizeBytes) + 1
         }
 
+    private fun validateNonNegativeCapacityBytes(capacityBytes: Int) {
+        if (capacityBytes < 0) {
+            throw IllegalArgumentException("capacityBytes = $capacityBytes < 0")
+        }
+    }
+
     override fun allocateNativeMemoryBuffer(capacityBytes: Int): NativeMemoryBuffer {
+        validateNonNegativeCapacityBytes(capacityBytes = capacityBytes)
+
         val pagesNeeded = computePagesNeeded(capacityBytes = capacityBytes)
 
         val pages = freeList.allocatePages(numPagesToAllocate = pagesNeeded)
@@ -152,34 +160,39 @@ internal class NativeMemoryAllocatorImpl(
     }
 
     override fun resizeNativeMemoryBuffer(buffer: NativeMemoryBuffer, newCapacityBytes: Int) {
+        validateNonNegativeCapacityBytes(capacityBytes = newCapacityBytes)
+
         val bufferImpl = buffer as NativeMemoryBufferImpl
-        if (bufferImpl.freed) {
-            throw IllegalStateException("attempt to resize already freed buffer $buffer")
+
+        when {
+            bufferImpl.freed -> {
+                throw IllegalStateException("attempt to resize already freed buffer $buffer")
+            }
+            bufferImpl.capacityBytes != newCapacityBytes -> {
+                val newPagesNeeded = computePagesNeeded(newCapacityBytes)
+
+                when {
+                    newPagesNeeded == bufferImpl.pages.size -> {
+                        bufferImpl.capacityBytes = newCapacityBytes
+                    }
+                    newPagesNeeded < bufferImpl.pages.size -> {
+                        shrinkNativeMemoryBuffer(
+                            bufferImpl = bufferImpl,
+                            newCapacityBytes = newCapacityBytes,
+                            newPagesNeeded = newPagesNeeded,
+                        )
+                    }
+                    else -> {
+                        expandNativeMemoryBuffer(
+                            bufferImpl = bufferImpl,
+                            newCapacityBytes = newCapacityBytes,
+                            newPagesNeeded = newPagesNeeded,
+                        )
+                    }
+                }
+            }
         }
 
-        if (bufferImpl.capacityBytes == newCapacityBytes) {
-            return
-        }
-
-        val newPagesNeeded = computePagesNeeded(newCapacityBytes)
-        if (newPagesNeeded == bufferImpl.pages.size) {
-            bufferImpl.capacityBytes = newCapacityBytes
-            return
-        }
-
-        if (newPagesNeeded < bufferImpl.pages.size) {
-            shrinkNativeMemoryBuffer(
-                bufferImpl = bufferImpl,
-                newCapacityBytes = newCapacityBytes,
-                newPagesNeeded = newPagesNeeded,
-            )
-        } else {
-            expandNativeMemoryBuffer(
-                bufferImpl = bufferImpl,
-                newCapacityBytes = newCapacityBytes,
-                newPagesNeeded = newPagesNeeded,
-            )
-        }
     }
 
 }
