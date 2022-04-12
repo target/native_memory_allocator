@@ -10,9 +10,9 @@ import com.target.oss.nativememoryallocator.allocator.impl.NativeMemoryAllocator
  * @property zeroNativeMemoryOnStartup If true [NativeMemoryAllocator] writes zeros to the block of native memory it allocates on construction.
  */
 data class NativeMemoryAllocatorBuilder(
-    val pageSizeBytes: Int,
-    val nativeMemorySizeBytes: Long,
-    val zeroNativeMemoryOnStartup: Boolean = false,
+    private val pageSizeBytes: Int,
+    private val nativeMemorySizeBytes: Long,
+    private val zeroNativeMemoryOnStartup: Boolean = false,
 ) {
 
     /**

@@ -72,13 +72,13 @@ interface CaffeineConfigBuilder {
  * @property caffeineConfigFunction caffeine config function
  */
 data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
-    val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
-    val nativeMemoryAllocator: NativeMemoryAllocator,
-    val enableOperationCounters: Boolean = false,
-    val useThreadLocalOnHeapReadBuffer: Boolean = true,
-    val threadLocalOnHeapReadBufferInitialCapacityBytes: Int = (256 * 1024),
-    val backend: NativeMemoryMapBackend = NativeMemoryMapBackend.CONCURRENT_HASH_MAP,
-    val caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit = {},
+    private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
+    private val nativeMemoryAllocator: NativeMemoryAllocator,
+    private val enableOperationCounters: Boolean = false,
+    private val useThreadLocalOnHeapReadBuffer: Boolean = true,
+    private val threadLocalOnHeapReadBufferInitialCapacityBytes: Int = (256 * 1024),
+    private val backend: NativeMemoryMapBackend = NativeMemoryMapBackend.CONCURRENT_HASH_MAP,
+    private val caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit = {},
 ) {
 
     /**
