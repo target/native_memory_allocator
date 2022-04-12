@@ -46,7 +46,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.13.1")
     implementation("io.github.microutils:kotlin-logging:2.1.21")
     implementation("org.objenesis:objenesis:3.2")
     implementation("io.micrometer:micrometer-core:1.8.1")

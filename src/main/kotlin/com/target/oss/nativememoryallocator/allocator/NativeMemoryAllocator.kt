@@ -65,6 +65,7 @@ interface NativeMemoryAllocator {
      *
      * @param capacityBytes capacity in bytes to allocate
      * @return NativeMemoryBuffer
+     * @throws [IllegalArgumentException] if capacityBytes is negative.
      * @throws [IllegalStateException] if too few pages are free to satisfy the request.
      */
     fun allocateNativeMemoryBuffer(capacityBytes: Int): NativeMemoryBuffer
@@ -87,6 +88,7 @@ interface NativeMemoryAllocator {
      *
      * @param buffer a [NativeMemoryBuffer] that was previously returned by allocateNativeMemoryBuffer.
      * @param newCapacityBytes new capacity in bytes
+     * @throws [IllegalArgumentException] if newCapacityBytes is negative.
      * @throws [IllegalStateException] if [buffer] has already been freed, or if too few pages are free to satisfy the request.
      */
     fun resizeNativeMemoryBuffer(buffer: NativeMemoryBuffer, newCapacityBytes: Int)
