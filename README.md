@@ -33,6 +33,10 @@ This project provides the following components:
 
 ## Example Usage
 
+See the `examples` directory for complete runnable example applications.
+
+Basic steps to use NativeMemoryAllocator:
+
 Define a map value object.
 
 ```
