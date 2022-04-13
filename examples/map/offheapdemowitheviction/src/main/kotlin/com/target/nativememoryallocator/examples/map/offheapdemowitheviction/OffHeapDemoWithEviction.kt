@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples.map
+package com.target.nativememoryallocator.examples.map.offheapdemowitheviction
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.examples.map.utils.CacheObject
@@ -14,9 +14,9 @@ private val logger = KotlinLogging.logger {}
 
 
 /**
- * Same as [OffHeapDemoWithEviction] but enables operation counters
+ * Same as OffHeapDemo but uses the Caffeine backend with maximumSize of 10,000 entries.
  */
-class OffHeapDemoWithEvictionAndOperationCounters {
+private class OffHeapDemoWithEviction {
 
     private val numEntries = 20_000
 
@@ -35,8 +35,7 @@ class OffHeapDemoWithEvictionAndOperationCounters {
             caffeineConfigBuilder
                 .maximumSize(10_000)
                 .recordStats()
-        },
-        enableOperationCounters = true
+        }
     ).build()
 
     private fun putValueIntoMap(i: Int) {
@@ -79,8 +78,6 @@ class OffHeapDemoWithEvictionAndOperationCounters {
 
         logger.info { "caffeine eviction count = ${nativeMemoryMap.stats.caffeineStats?.evictionCount()}" }
 
-        logger.info { "nativeMemoryMap.operationCounters = ${nativeMemoryMap.operationCounters}" }
-
         while (true) {
             delay(1_000)
         }
@@ -90,6 +87,6 @@ class OffHeapDemoWithEvictionAndOperationCounters {
 
 suspend fun main() {
     withContext(Dispatchers.Default) {
-        OffHeapDemoWithEvictionAndOperationCounters().run()
+        OffHeapDemoWithEviction().run()
     }
 }

@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples.map
+package com.target.nativememoryallocator.examples.map.offheapdemo
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.examples.map.utils.CacheObject
@@ -14,9 +14,17 @@ private val logger = KotlinLogging.logger {}
 
 
 /**
- * Same as [OffHeapDemo] but uses the Caffeine backend with maximumSize of 10,000 entries.
+ * Demo application that puts 20,000 [CacheObject] instances into a [NativeMemoryMap].
+ *
+ * This demo uses the ConcurrentHashMap backend for [NativeMemoryMap].
+ *
+ * Each [CacheObject] instances contains a random string of length 500KB.
+ *
+ * This is a total of 10 GB of data in off-heap memory.
+ *
+ * OnHeapDemo is the same application using normal on-heap storage for comparison.
  */
-class OffHeapDemoWithEviction {
+private class OffHeapDemo {
 
     private val numEntries = 20_000
 
@@ -30,12 +38,7 @@ class OffHeapDemoWithEviction {
     private val nativeMemoryMap = NativeMemoryMapBuilder<Int, CacheObject>(
         valueSerializer = CacheObjectSerializer(),
         nativeMemoryAllocator = nativeMemoryAllocator,
-        backend = NativeMemoryMapBackend.CAFFEINE,
-        caffeineConfigFunction = { caffeineConfigBuilder ->
-            caffeineConfigBuilder
-                .maximumSize(10_000)
-                .recordStats()
-        }
+        backend = NativeMemoryMapBackend.CONCURRENT_HASH_MAP,
     ).build()
 
     private fun putValueIntoMap(i: Int) {
@@ -76,8 +79,6 @@ class OffHeapDemoWithEviction {
             logger.info { "randomIndexValue.s.substring(0,20) = ${it.s.substring(0, 20)}" }
         }
 
-        logger.info { "caffeine eviction count = ${nativeMemoryMap.stats.caffeineStats?.evictionCount()}" }
-
         while (true) {
             delay(1_000)
         }
@@ -87,6 +88,6 @@ class OffHeapDemoWithEviction {
 
 suspend fun main() {
     withContext(Dispatchers.Default) {
-        OffHeapDemoWithEviction().run()
+        OffHeapDemo().run()
     }
 }

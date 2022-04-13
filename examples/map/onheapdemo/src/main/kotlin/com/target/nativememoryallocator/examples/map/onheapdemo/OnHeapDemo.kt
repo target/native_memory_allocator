@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples.map
+package com.target.nativememoryallocator.examples.map.onheapdemo
 
 import com.target.nativememoryallocator.examples.map.utils.CacheObject
 import com.target.nativememoryallocator.examples.map.utils.buildRandomString
@@ -17,9 +17,9 @@ private val logger = KotlinLogging.logger {}
  * This is a total of 10 GB of data stored on the normal Java heap.
  *
  * This application does not make use of any features of the native_memory_allocator library.
- * It is provided for comparison with [OffHeapDemo].
+ * It is provided for comparison with off-heap demos.
  */
-class OnHeapDemo {
+private class OnHeapDemo {
 
     private val numEntries = 20_000
 
