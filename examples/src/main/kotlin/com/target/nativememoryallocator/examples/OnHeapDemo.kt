@@ -59,7 +59,7 @@ class OnHeapDemo {
 
 }
 
-suspend fun main(args: Array<String>) {
+suspend fun main() {
     withContext(Dispatchers.Default) {
         OnHeapDemo().run()
     }
