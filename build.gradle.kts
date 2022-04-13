@@ -20,7 +20,8 @@ plugins {
     id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
     jacoco
-//    id("org.jetbrains.dokka") version "1.6.10"
+    // For now commenting the dokka plugin as latest version 1.6.10 depends on vulnerable versions of jackson/jsoup/etc.
+    // id("org.jetbrains.dokka") version "1.6.10"
 }
 
 apply(plugin = "nebula.release")
