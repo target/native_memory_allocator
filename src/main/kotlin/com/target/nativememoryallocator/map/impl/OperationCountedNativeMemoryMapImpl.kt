@@ -18,7 +18,13 @@ internal class OperationCountersImpl(
     override val numDeletesNoChange: AtomicLong = AtomicLong(0),
     override val numGetsNullValue: AtomicLong = AtomicLong(0),
     override val numGetsNonNullValue: AtomicLong = AtomicLong(0),
-) : NativeMemoryMapOperationCounters
+) : NativeMemoryMapOperationCounters {
+
+    override fun toString(): String {
+        return "OperationCountersImpl(numPutsNoChange=$numPutsNoChange, numPutsFreedBuffer=$numPutsFreedBuffer, numPutsReusedBuffer=$numPutsReusedBuffer, numPutsNewBuffer=$numPutsNewBuffer, numDeletesFreedBuffer=$numDeletesFreedBuffer, numDeletesNoChange=$numDeletesNoChange, numGetsNullValue=$numGetsNullValue, numGetsNonNullValue=$numGetsNonNullValue)"
+    }
+
+}
 
 /**
  * Implementation of [NativeMemoryMap] supporting operation counters.
