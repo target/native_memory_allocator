@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples.map
+package com.target.nativememoryallocator.examples.map.utils
 
 private val charset = ('a'..'z') + ('A'..'Z') + ('0'..'9')
 

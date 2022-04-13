@@ -1,5 +1,7 @@
 package com.target.nativememoryallocator.examples.map
 
+import com.target.nativememoryallocator.examples.map.utils.CacheObject
+import com.target.nativememoryallocator.examples.map.utils.buildRandomString
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
@@ -10,7 +12,7 @@ private val logger = KotlinLogging.logger {}
 /**
  * Demo application that puts 20,000 [CacheObject] instances into a [ConcurrentHashMap].
  *
- * Each [CacheObject] instances contains a random string of length 500KB.
+ * Each [CacheObject] instance contains a random string of length 500KB.
  *
  * This is a total of 10 GB of data stored on the normal Java heap.
  *
