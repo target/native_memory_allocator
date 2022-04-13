@@ -20,7 +20,7 @@ plugins {
     id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
     jacoco
-    id("org.jetbrains.dokka") version "1.6.10"
+//    id("org.jetbrains.dokka") version "1.6.10"
 }
 
 apply(plugin = "nebula.release")
