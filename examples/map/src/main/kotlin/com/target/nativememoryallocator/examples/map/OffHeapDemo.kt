@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples
+package com.target.nativememoryallocator.examples.map
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
@@ -11,22 +11,15 @@ import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
 
-private class CacheObjectSerializer : NativeMemoryMapSerializer<CacheObject> {
-
-    override fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): CacheObject {
-        return CacheObject(
-            s = String(onHeapMemoryBuffer.toTrimmedArray()),
-        )
-    }
-
-    override fun serializeToByteArray(value: CacheObject): ByteArray {
-        return value.s.toByteArray()
-    }
-
-}
 
 /**
  * Demo application that puts 20,000 [CacheObject] instances into a [NativeMemoryMap].
+ *
+ * Each [CacheObject] instances contains a random string of length 500KB.
+ *
+ * This is a total of 10 GB of data.
+ *
+ * [OnHeapDemo] is the same application using normal on-heap storage for comparison.
  */
 class OffHeapDemo {
 
@@ -86,6 +79,20 @@ class OffHeapDemo {
         while (true) {
             delay(1_000)
         }
+    }
+
+}
+
+private class CacheObjectSerializer : NativeMemoryMapSerializer<CacheObject> {
+
+    override fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): CacheObject {
+        return CacheObject(
+            s = String(onHeapMemoryBuffer.toTrimmedArray()),
+        )
+    }
+
+    override fun serializeToByteArray(value: CacheObject): ByteArray {
+        return value.s.toByteArray()
     }
 
 }

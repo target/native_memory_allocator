@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.examples
+package com.target.nativememoryallocator.examples.map
 
 import kotlinx.coroutines.*
 import mu.KotlinLogging
@@ -9,6 +9,13 @@ private val logger = KotlinLogging.logger {}
 
 /**
  * Demo application that puts 20,000 [CacheObject] instances into a [ConcurrentHashMap].
+ *
+ * Each [CacheObject] instances contains a random string of length 500KB.
+ *
+ * This is a total of 10 GB of data stored on the normal Java heap.
+ *
+ * This application does not make use of any features of the native_memory_allocator library.
+ * It is provided for comparison with [OffHeapDemo].
  */
 class OnHeapDemo {
 
