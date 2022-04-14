@@ -6,10 +6,8 @@ import java.util.concurrent.atomic.AtomicLong
 
 /**
  * Implementation of [NativeMemoryMapOperationCounters].
- *
- * Note this is not a data class because [AtomicLong] does not implement [Object.equals].
  */
-internal class OperationCountersImpl(
+internal data class OperationCountersImpl(
     override val numPutsNoChange: AtomicLong = AtomicLong(0),
     override val numPutsFreedBuffer: AtomicLong = AtomicLong(0),
     override val numPutsReusedBuffer: AtomicLong = AtomicLong(0),
@@ -20,8 +18,29 @@ internal class OperationCountersImpl(
     override val numGetsNonNullValue: AtomicLong = AtomicLong(0),
 ) : NativeMemoryMapOperationCounters {
 
-    override fun toString(): String {
-        return "OperationCountersImpl(numPutsNoChange=$numPutsNoChange, numPutsFreedBuffer=$numPutsFreedBuffer, numPutsReusedBuffer=$numPutsReusedBuffer, numPutsNewBuffer=$numPutsNewBuffer, numDeletesFreedBuffer=$numDeletesFreedBuffer, numDeletesNoChange=$numDeletesNoChange, numGetsNullValue=$numGetsNullValue, numGetsNonNullValue=$numGetsNonNullValue)"
+    /**
+     * Needed because AtomicLong does not implement equals().
+     *
+     * @see https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/atomic/package-summary.html
+     *
+     * @param [that] object for equality check.
+     * @return true if this has equal counter values to [that]
+     */
+    fun counterValuesEqual(that: OperationCountersImpl): Boolean {
+        val atomicLongGetters = listOf(
+            OperationCountersImpl::numPutsNoChange,
+            OperationCountersImpl::numPutsFreedBuffer,
+            OperationCountersImpl::numPutsReusedBuffer,
+            OperationCountersImpl::numPutsNewBuffer,
+            OperationCountersImpl::numDeletesFreedBuffer,
+            OperationCountersImpl::numDeletesNoChange,
+            OperationCountersImpl::numGetsNullValue,
+            OperationCountersImpl::numGetsNonNullValue,
+        )
+
+        return atomicLongGetters.all { getter ->
+            getter(this).toLong() == getter(that).toLong()
+        }
     }
 
 }
