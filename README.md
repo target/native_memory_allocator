@@ -33,6 +33,10 @@ This project provides the following components:
 
 ## Example Usage
 
+See the `examples` directory for complete runnable example applications.
+
+Basic steps to use NativeMemoryAllocator:
+
 Define a map value object.
 
 ```
@@ -118,7 +122,7 @@ The [Dokka](https://github.com/Kotlin/dokka) plugin is present in `build.gradle.
 To generate HTML documentation use the following command:
 
 ```
-./gradlew dokkaHtml
+./gradlew -PdokkaEnabled=true dokkaHtml
 ```
 
 Open `build/dokka/html/index.html` to view generated documentation.

@@ -13,19 +13,52 @@ import java.util.concurrent.atomic.AtomicLong
 class OperationCountedNativeMemoryMapImplSpec : Spek({
     class TestValueObject
 
-    // Needed because AtomicLong does not implement equals()
-    // See https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/concurrent/atomic/package-summary.html
-    fun OperationCountersImpl.counterValuesEqual(that: OperationCountersImpl): Boolean =
-        ((this.numPutsNoChange.toLong() == that.numPutsNoChange.toLong()) &&
-                (this.numPutsFreedBuffer.toLong() == that.numPutsFreedBuffer.toLong()) &&
-                (this.numPutsReusedBuffer.toLong() == that.numPutsReusedBuffer.toLong()) &&
-                (this.numPutsNewBuffer.toLong() == that.numPutsNewBuffer.toLong()) &&
-                (this.numDeletesFreedBuffer.toLong() == that.numDeletesFreedBuffer.toLong()) &&
-                (this.numDeletesNoChange.toLong() == that.numDeletesNoChange.toLong()) &&
-                (this.numGetsNullValue.toLong() == that.numGetsNullValue.toLong()) &&
-                (this.numGetsNonNullValue.toLong() == that.numGetsNonNullValue.toLong()))
-
     Feature("NativeMemoryMapWithOperationCountersImpl") {
+        Scenario("test OperationCountersImpl.counterValuesEqual") {
+            var retVal: Boolean = false
+
+            Given("reset retVal") {
+                retVal = false
+            }
+            When("compare all zero OperationCountersImpl instances") {
+                val operationCountersImpl1 = OperationCountersImpl()
+
+                val operationCountersImpl2 = OperationCountersImpl()
+
+                retVal = operationCountersImpl1.counterValuesEqual(operationCountersImpl2)
+            }
+            Then("retVal is true") {
+                assertTrue(retVal)
+            }
+            Given("reset retVal") {
+                retVal = false
+            }
+            When("compare non equal values") {
+                val operationCountersImpl1 = OperationCountersImpl()
+                operationCountersImpl1.numPutsNoChange.set(1)
+
+                val operationCountersImpl2 = OperationCountersImpl()
+
+                retVal = operationCountersImpl1.counterValuesEqual(operationCountersImpl2)
+            }
+            Then("retVal is false") {
+                assertFalse(retVal)
+            }
+            Given("reset retVal") {
+                retVal = false
+            }
+            When("compare non equal values") {
+                val operationCountersImpl1 = OperationCountersImpl()
+
+                val operationCountersImpl2 = OperationCountersImpl()
+                operationCountersImpl2.numGetsNonNullValue.set(1)
+
+                retVal = operationCountersImpl1.counterValuesEqual(operationCountersImpl2)
+            }
+            Then("retVal is false") {
+                assertFalse(retVal)
+            }
+        }
         Scenario("test put no change") {
             lateinit var nativeMemoryMap: NativeMemoryMap<Int, TestValueObject>
             lateinit var operationCountedNativeMemoryMapImpl: OperationCountedNativeMemoryMapImpl<Int, TestValueObject>

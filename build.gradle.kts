@@ -20,7 +20,16 @@ plugins {
     id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
     jacoco
-    id("org.jetbrains.dokka") version "1.6.10"
+    id("org.jetbrains.dokka") version "1.6.10" apply false
+}
+
+// Conditionally enable dokka only when dokkaEnabled=true property is set.
+// Latest version 1.6.10 depends on vulnerable versions of jackson/jsoup/etc.
+val dokkaEnabled = (project.properties["dokkaEnabled"]?.toString()?.toBoolean()) ?: false
+project.logger.lifecycle("dokkaEnabled = $dokkaEnabled")
+
+if (dokkaEnabled) {
+    apply(plugin = "org.jetbrains.dokka")
 }
 
 apply(plugin = "nebula.release")
