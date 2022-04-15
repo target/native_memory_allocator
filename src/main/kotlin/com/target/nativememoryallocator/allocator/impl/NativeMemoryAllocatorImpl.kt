@@ -59,12 +59,12 @@ internal class NativeMemoryAllocatorImpl(
     private val freeList: FreeList
 
     init {
+        logger.info { "begin init pageSizeBytes = $pageSizeBytes nativeMemorySizeBytes = $nativeMemorySizeBytes" }
+
         validateNativeMemoryAllocatorInitialParameters(
             pageSizeBytes = pageSizeBytes,
             nativeMemorySizeBytes = nativeMemorySizeBytes,
         )
-
-        logger.info { "begin init pageSizeBytes = $pageSizeBytes nativeMemorySizeBytes = $nativeMemorySizeBytes" }
 
         logger.info { "allocating nativeMemorySizeBytes = $nativeMemorySizeBytes" }
         baseNativeMemoryPointer = UnsafeContainer.unsafe.allocateMemory(nativeMemorySizeBytes)
