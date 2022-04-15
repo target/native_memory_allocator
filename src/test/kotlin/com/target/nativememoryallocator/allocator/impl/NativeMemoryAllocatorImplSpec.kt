@@ -5,12 +5,130 @@ import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.unsafe.UnsafeContainer
 import io.mockk.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.gherkin.Feature
 import sun.misc.Unsafe
 
 class NativeMemoryAllocatorImplSpec : Spek({
     Feature("NativeMemoryAllocatorImpl") {
+        Scenario("test validateNativeMemoryAllocatorInitialParameters") {
+            var pageSizeBytes = 0
+            var nativeMemorySizeBytes = 0L
+
+            When("negative pageSizeBytes") {
+                pageSizeBytes = -1
+                nativeMemorySizeBytes = 1L * 1024L * 1024L * 1024L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+            When("zero pageSizeBytes") {
+                pageSizeBytes = 0
+                nativeMemorySizeBytes = 1L * 1024L * 1024L * 1024L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+            When("positive pageSizeBytes") {
+                pageSizeBytes = 1
+                nativeMemorySizeBytes = 1L * 1024L * 1024L * 1024L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters does not throw") {
+                validateNativeMemoryAllocatorInitialParameters(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+            }
+            When("max pageSizeBytes") {
+                pageSizeBytes = Int.MAX_VALUE
+                nativeMemorySizeBytes = Int.MAX_VALUE.toLong()
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters does not throw") {
+                validateNativeMemoryAllocatorInitialParameters(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+            }
+            When("negative nativeMemorySizeBytes") {
+                pageSizeBytes = 1
+                nativeMemorySizeBytes = -1L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+            When("zero nativeMemorySizeBytes") {
+                pageSizeBytes = 1
+                nativeMemorySizeBytes = 0L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+            When("positive nativeMemorySizeBytes") {
+                pageSizeBytes = 1
+                nativeMemorySizeBytes = 1L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters does not throw") {
+                validateNativeMemoryAllocatorInitialParameters(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+            }
+            When("positive nativeMemorySizeBytes") {
+                pageSizeBytes = 4 * 1024
+                nativeMemorySizeBytes = (1L * 1024L * 1024L * 1024L)
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters does not throw") {
+                validateNativeMemoryAllocatorInitialParameters(
+                    pageSizeBytes = pageSizeBytes,
+                    nativeMemorySizeBytes = nativeMemorySizeBytes,
+                )
+            }
+            When("nativeMemorySizeBytes not evenly divisible by pageSizeBytes") {
+                pageSizeBytes = 4 * 1024
+                nativeMemorySizeBytes = (1L * 1024L * 1024L * 1024L) + 1L
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+            When("invalid totalNumPages") {
+                pageSizeBytes = 1
+                nativeMemorySizeBytes = (20L * 1024L * 1024L * 1024L)
+            }
+            Then("validateNativeMemoryAllocatorInitialParameters throws IllegalArgumentException") {
+                assertThrows(IllegalArgumentException::class.java) {
+                    validateNativeMemoryAllocatorInitialParameters(
+                        pageSizeBytes = pageSizeBytes,
+                        nativeMemorySizeBytes = nativeMemorySizeBytes,
+                    )
+                }
+            }
+        }
         Scenario("test initialization") {
             lateinit var mockUnsafe: Unsafe
             val pageSizeBytes = 4_096 // 4kb
@@ -152,7 +270,7 @@ class NativeMemoryAllocatorImplSpec : Spek({
                         nativeMemorySizeBytes = nativeMemorySizeBytes,
                         zeroNativeMemoryOnStartup = false,
                     )
-                } catch (e: IllegalStateException) {
+                } catch (e: IllegalArgumentException) {
                     exceptionsCaught += 1
                 }
             }
