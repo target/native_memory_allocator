@@ -50,7 +50,7 @@ internal data class OperationCountersImpl(
  *
  * @param nativeMemoryMap [NativeMemoryMap] instance for delegation.
  */
-internal class OperationCountedNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class OperationCountedNativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private val nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
 

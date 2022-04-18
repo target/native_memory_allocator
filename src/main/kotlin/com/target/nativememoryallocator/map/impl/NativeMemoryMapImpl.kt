@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentMap
  * @param threadLocalOnHeapReadBufferInitialCapacityBytes initial capacity in bytes for [ThreadLocal] on-heap read buffers.
  * @param cacheMap [ConcurrentMap] of keys to [NativeMemoryBuffer] backing this map instance.
  */
-internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class NativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
     useThreadLocalOnHeapReadBuffer: Boolean,

@@ -32,8 +32,9 @@ interface BaseNativeMemoryMap {
  * Keys are stored as normal on-heap objects in the map.
  * Each value is serialized using NativeMemoryMapSerializer and copied into a NativeMemoryBuffer.
  * NativeMemoryMap is safe for use by multiple concurrent threads.
+ * [KEY_TYPE] and [VALUE_TYPE] extend [Any] to disallow nullable key and value types.
  */
-interface NativeMemoryMap<KEY_TYPE, VALUE_TYPE> : BaseNativeMemoryMap {
+interface NativeMemoryMap<KEY_TYPE : Any, VALUE_TYPE : Any> : BaseNativeMemoryMap {
 
     /**
      * The result of a put operation on the map.

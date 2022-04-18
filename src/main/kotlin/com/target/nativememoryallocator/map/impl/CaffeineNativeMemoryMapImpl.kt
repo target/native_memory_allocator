@@ -102,7 +102,7 @@ internal fun <KEY_TYPE> buildCaffeineCache(
  * @param caffeineCache caffeine cache instance
  * @param nativeMemoryMap [NativeMemoryMap] instance for delegation
  */
-internal class CaffeineNativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class CaffeineNativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private val caffeineCache: Cache<KEY_TYPE, NativeMemoryBuffer>,
     nativeMemoryMap: NativeMemoryMap<KEY_TYPE, VALUE_TYPE>,
 ) : NativeMemoryMap<KEY_TYPE, VALUE_TYPE> by nativeMemoryMap {
