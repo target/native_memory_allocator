@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentMap
  * @param threadLocalOnHeapReadBufferInitialCapacityBytes initial capacity in bytes for [ThreadLocal] on-heap read buffers.
  * @param cacheMap [ConcurrentMap] of keys to [NativeMemoryBuffer] backing this map instance.
  */
-internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
+internal class NativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
     useThreadLocalOnHeapReadBuffer: Boolean,
@@ -35,43 +35,43 @@ internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     override fun put(key: KEY_TYPE, value: VALUE_TYPE?): NativeMemoryMap.PutResult {
         var result: NativeMemoryMap.PutResult = NativeMemoryMap.PutResult.NO_CHANGE
 
-        cacheMap.compute(key) { _, currentNearCacheBuffer ->
+        cacheMap.compute(key) { _, currentBuffer ->
 
             if (value == null) {
                 // free current buffer, deleting entry from map
-                if (currentNearCacheBuffer != null) {
-                    nativeMemoryAllocator.freeNativeMemoryBuffer(currentNearCacheBuffer)
+                if (currentBuffer != null) {
+                    nativeMemoryAllocator.freeNativeMemoryBuffer(currentBuffer)
                     result = NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER
                 }
                 null
-            } else if (currentNearCacheBuffer == null) {
+            } else if (currentBuffer == null) {
                 // allocate a new buffer
                 val newValueByteArray = valueSerializer.serializeToByteArray(value = value)
                 val newCapacityBytes = newValueByteArray.size
 
-                val newNearCacheBuffer =
+                val newBuffer =
                     nativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = newCapacityBytes)
 
-                newNearCacheBuffer.copyFromArray(byteArray = newValueByteArray)
+                newBuffer.copyFromArray(byteArray = newValueByteArray)
 
                 result = NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
-                newNearCacheBuffer
+                newBuffer
             } else {
                 // reuse existing buffer
                 val newValueByteArray = valueSerializer.serializeToByteArray(value = value)
                 val newCapacityBytes = newValueByteArray.size
 
                 nativeMemoryAllocator.resizeNativeMemoryBuffer(
-                    buffer = currentNearCacheBuffer,
+                    buffer = currentBuffer,
                     newCapacityBytes = newCapacityBytes,
                 )
 
-                currentNearCacheBuffer.copyFromArray(byteArray = newValueByteArray)
+                currentBuffer.copyFromArray(byteArray = newValueByteArray)
 
                 result = NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER
 
-                currentNearCacheBuffer
+                currentBuffer
             }
         }
 
@@ -85,7 +85,7 @@ internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
     /**
      * Non-private for unit test only.
      */
-    val threadLocalHeapReadBuffer =
+    val threadLocalOnHeapReadBuffer =
         if (useThreadLocalOnHeapReadBuffer) {
             ThreadLocal.withInitial {
                 OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(
@@ -96,26 +96,29 @@ internal class NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
             null
         }
 
+    private val getOnHeapReadBuffer: (currentBuffer: NativeMemoryBuffer) -> OnHeapMemoryBuffer =
+        if (threadLocalOnHeapReadBuffer != null) {
+            { threadLocalOnHeapReadBuffer.get() }
+        } else {
+            { currentBuffer -> OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = currentBuffer.capacityBytes) }
+        }
+
     override fun get(key: KEY_TYPE): VALUE_TYPE? {
         var onHeapReadBuffer: OnHeapMemoryBuffer? = null
 
-        cacheMap.computeIfPresent(key) { _, nearCacheBuffer ->
+        cacheMap.computeIfPresent(key) { _, currentBuffer ->
 
             onHeapReadBuffer =
                 run {
-                    // copy nearCacheBuffer to readBuffer
-                    val readBuffer = if (threadLocalHeapReadBuffer != null) {
-                        threadLocalHeapReadBuffer.get()
-                    } else {
-                        OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = nearCacheBuffer.capacityBytes)
-                    }
+                    // copy currentBuffer to readBuffer
+                    val readBuffer = getOnHeapReadBuffer(currentBuffer)
 
-                    nearCacheBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer = readBuffer)
+                    currentBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer = readBuffer)
 
                     readBuffer
                 }
 
-            nearCacheBuffer
+            currentBuffer
         }
 
         return onHeapReadBuffer?.let {

@@ -185,7 +185,7 @@ class NativeMemoryMapImplSpec : Spek({
 
                 putResult = nativeMemoryMap.put(key = 1, value = putValue)
 
-                nativeMemoryMap.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
+                nativeMemoryMap.threadLocalOnHeapReadBuffer!!.set(threadLocalReadBuffer)
 
                 getResult = nativeMemoryMap.get(key = 1)
             }
@@ -387,7 +387,7 @@ class NativeMemoryMapImplSpec : Spek({
                     nativeMemoryBuffer.copyFromArray(byteArray = serializedValue2)
                 } returns Unit
 
-                nativeMemoryMap.threadLocalHeapReadBuffer!!.set(threadLocalReadBuffer)
+                nativeMemoryMap.threadLocalOnHeapReadBuffer!!.set(threadLocalReadBuffer)
 
                 every {
                     nativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)

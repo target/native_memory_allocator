@@ -71,7 +71,7 @@ interface CaffeineConfigBuilder {
  * @property threadLocalOnHeapReadBufferInitialCapacityBytes initial capacity in bytes for [ThreadLocal] on-heap read buffers.
  * @property caffeineConfigFunction caffeine config function
  */
-data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
+data class NativeMemoryMapBuilder<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private val valueSerializer: NativeMemoryMapSerializer<VALUE_TYPE>,
     private val nativeMemoryAllocator: NativeMemoryAllocator,
     private val enableOperationCounters: Boolean = false,
@@ -89,7 +89,7 @@ data class NativeMemoryMapBuilder<KEY_TYPE, VALUE_TYPE>(
 
         val nativeMemoryMap = when (backend) {
             NativeMemoryMapBackend.CONCURRENT_HASH_MAP -> {
-                NativeMemoryMapImpl(
+                NativeMemoryMapImpl<KEY_TYPE, VALUE_TYPE>(
                     valueSerializer = valueSerializer,
                     nativeMemoryAllocator = nativeMemoryAllocator,
                     useThreadLocalOnHeapReadBuffer = useThreadLocalOnHeapReadBuffer,
