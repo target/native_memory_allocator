@@ -10,6 +10,36 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 /**
+ * Validate initial parameters for [NativeMemoryAllocator].
+ *
+ * @param [pageSizeBytes] page size in bytes.
+ * @param [nativeMemorySizeBytes] native memory size in bytes.
+ * @throws [IllegalArgumentException] if parameters are invalid.
+ */
+internal fun validateNativeMemoryAllocatorInitialParameters(
+    pageSizeBytes: Int,
+    nativeMemorySizeBytes: Long,
+) {
+    if (pageSizeBytes < 1) {
+        throw IllegalArgumentException("pageSizeBytes = $pageSizeBytes < 1")
+    }
+
+    if (nativeMemorySizeBytes < 1L) {
+        throw IllegalArgumentException("nativeMemorySizeBytes = $nativeMemorySizeBytes < 1L")
+    }
+
+    if ((nativeMemorySizeBytes % pageSizeBytes) != 0L) {
+        throw IllegalArgumentException("nativeMemorySizeBytes = $nativeMemorySizeBytes is not evenly divisible by pageSizeBytes = $pageSizeBytes")
+    }
+
+    val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes)
+
+    if (totalNumPages > Int.MAX_VALUE.toLong()) {
+        throw IllegalArgumentException("totalNumPages = $totalNumPages > Int.MAX_VALUE = ${Int.MAX_VALUE.toLong()}")
+    }
+}
+
+/**
  * Implementation of [NativeMemoryAllocator].
  *
  * All fields in this class are immutable except freeList.  freeList manages its own synchronization.
@@ -31,9 +61,10 @@ internal class NativeMemoryAllocatorImpl(
     init {
         logger.info { "begin init pageSizeBytes = $pageSizeBytes nativeMemorySizeBytes = $nativeMemorySizeBytes" }
 
-        if ((nativeMemorySizeBytes % pageSizeBytes) != 0L) {
-            throw IllegalStateException("nativeMemorySizeBytes = $nativeMemorySizeBytes is not evenly divisible by pageSizeBytes = $pageSizeBytes")
-        }
+        validateNativeMemoryAllocatorInitialParameters(
+            pageSizeBytes = pageSizeBytes,
+            nativeMemorySizeBytes = nativeMemorySizeBytes,
+        )
 
         logger.info { "allocating nativeMemorySizeBytes = $nativeMemorySizeBytes" }
         baseNativeMemoryPointer = UnsafeContainer.unsafe.allocateMemory(nativeMemorySizeBytes)
