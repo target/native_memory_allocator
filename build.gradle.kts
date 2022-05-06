@@ -69,18 +69,6 @@ java {
     withSourcesJar()
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-    }
-    publications {
-        register("mavenJava", MavenPublication::class) {
-            from(components["java"])
-            artifact(tasks.findByName("sourcesJar"))
-        }
-    }
-}
-
 jacoco {
     toolVersion = "0.8.7"
 }
