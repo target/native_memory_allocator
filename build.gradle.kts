@@ -6,14 +6,10 @@ buildscript {
         mavenCentral()
         maven { url = uri("https://plugins.gradle.org/m2/") }
     }
-    dependencies {
-        classpath("com.netflix.nebula:nebula-release-plugin:16.0.0")
-    }
 }
 
 plugins {
     kotlin("jvm") version "1.6.10"
-    id("com.jfrog.artifactory") version "4.26.2"
     `maven-publish`
     jacoco
     id("org.jetbrains.dokka") version "1.6.10" apply false
@@ -27,8 +23,6 @@ project.logger.lifecycle("dokkaEnabled = $dokkaEnabled")
 if (dokkaEnabled) {
     apply(plugin = "org.jetbrains.dokka")
 }
-
-apply(plugin = "nebula.release")
 
 group = "com.target"
 java.sourceCompatibility = JavaVersion.VERSION_11
@@ -78,5 +72,23 @@ tasks.jacocoTestReport {
         xml.isEnabled = true
         csv.isEnabled = false
         html.destination = file("${buildDir}/jacocoHtml")
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/target/native_memory_allocator")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
     }
 }
