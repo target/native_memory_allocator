@@ -17,7 +17,7 @@ This project provides the following components:
     * Advantages of this design:
         * All allocate, resize, and free operations after startup are very fast because they do not do native-memory
           allocation or free operations
-        * Fragmentation is not an issue because OffHeapMemoryBuffer has no requirement for memory pages to be contiguous
+        * Fragmentation is not an issue because NativeMemoryBuffer has no requirement for memory pages to be contiguous
 * Buffer
     * Supports OnHeapMemoryBuffer as a normal on-heap byte array
     * Supports NativeMemoryBuffer as a list of native memory pages allocated by NativeMemoryAllocator
@@ -36,6 +36,12 @@ This project provides the following components:
 See the `examples` directory for complete runnable example applications.
 
 Basic steps to use NativeMemoryAllocator:
+
+Add the following repository to maven or gradle build:
+```
+https://maven.pkg.github.com/target/native_memory_allocator
+```
+Add `com.target:native_memory_allocator` dependency to maven or gradle build - see [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
 
 Define a map value object.
 
