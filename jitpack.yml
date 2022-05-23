@@ -1,5 +1,5 @@
 jdk:
   - openjdk11
 install:
-  - echo "Running a custom install command"
-  - ./gradlew clean install
+  - echo "Running install VERSION=$VERSION"
+  - ./gradlew -Pgroup=com.github.target -Pversion=$VERSION clean assemble publishToMavenLocal
