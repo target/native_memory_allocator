@@ -38,10 +38,18 @@ This project provides the following components:
    [![](https://jitpack.io/v/target/native_memory_allocator.svg)](https://jitpack.io/#target/native_memory_allocator) 
 
    jitpack allows anonymous downloads of maven/gradle artifacts. 
+   
+   Add repository to maven/gradle build: `https://jitpack.io`
+   
+   Add dependency to maven/gradle build: `com.github.target:native_memory_allocator:VERSION`  See [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
 
 2. Use github packages: https://github.com/target/native_memory_allocator/packages/1407699
 
    github packages requires using a github.com personal access token (PAT): https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
+   
+   Add repository to maven/gradle build: `https://maven.pkg.github.com/target/native_memory_allocator`
+   
+   Add dependency to maven/gradle build: `com.target:native_memory_allocator:VERSION`  See [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
 
 
 ## Example Usage
