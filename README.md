@@ -45,7 +45,7 @@ This project provides the following components:
 
 2. Use github packages: https://github.com/target/native_memory_allocator/packages/1407699
 
-   github packages requires using a github.com personal access token (PAT): https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
+   github packages requires using a github.com personal access token (PAT) in maven/gradle build: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
    
    Add repository to maven/gradle build: `https://maven.pkg.github.com/target/native_memory_allocator`
    
