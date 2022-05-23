@@ -31,17 +31,32 @@ This project provides the following components:
 * Metrics
     * Metrics reporter classes exist for NativeMemoryAllocator and NativeMemoryMap using Micrometer
 
+## Using as a maven or gradle dependency
+
+1. Use jitpack.io: https://jitpack.io/#target/native_memory_allocator
+
+   [![](https://jitpack.io/v/target/native_memory_allocator.svg)](https://jitpack.io/#target/native_memory_allocator) 
+
+   jitpack allows anonymous downloads of maven/gradle artifacts. 
+   
+   Add repository to maven/gradle build: `https://jitpack.io`
+   
+   Add dependency to maven/gradle build: `com.github.target:native_memory_allocator:VERSION`  See [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
+
+2. Use github packages: https://github.com/target/native_memory_allocator/packages/1407699
+
+   github packages requires using a github.com personal access token (PAT) in maven/gradle build: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry
+   
+   Add repository to maven/gradle build: `https://maven.pkg.github.com/target/native_memory_allocator`
+   
+   Add dependency to maven/gradle build: `com.target:native_memory_allocator:VERSION`  See [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
+
+
 ## Example Usage
 
 See the `examples` directory for complete runnable example applications.
 
 Basic steps to use NativeMemoryAllocator:
-
-Add the following repository to maven or gradle build:
-```
-https://maven.pkg.github.com/target/native_memory_allocator
-```
-Add `com.target:native_memory_allocator` dependency to maven or gradle build - see [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
 
 Define a map value object.
 
