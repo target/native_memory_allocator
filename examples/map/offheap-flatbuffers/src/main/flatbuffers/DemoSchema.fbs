@@ -1,0 +1,12 @@
+namespace com.target.nativememoryallocator.examples.map.offheap.flatbuffers.generated;
+
+table FlatBufferDemoCacheObjectListEntry {
+  id: int;
+  boolean_field: bool;
+  string_field: string;
+}
+
+table FlatBufferDemoCacheObject {
+  id: int;
+  entry_list: [FlatBufferDemoCacheObjectListEntry];
+}
