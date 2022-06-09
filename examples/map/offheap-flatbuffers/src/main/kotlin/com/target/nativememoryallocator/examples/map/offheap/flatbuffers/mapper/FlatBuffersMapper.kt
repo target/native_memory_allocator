@@ -7,6 +7,9 @@ import com.target.nativememoryallocator.examples.map.offheap.flatbuffers.model.D
 import com.target.nativememoryallocator.examples.map.offheap.flatbuffers.model.DemoCacheObjectListEntry
 import java.nio.ByteBuffer
 
+/**
+ * Mapper between [DemoCacheObject] and [FlatBufferDemoCacheObject].
+ */
 object FlatBuffersMapper {
 
     fun demoCacheObjectToFlatBuffer(

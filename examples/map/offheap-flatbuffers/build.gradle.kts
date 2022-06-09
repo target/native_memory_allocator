@@ -18,7 +18,7 @@ tasks {
     named<ShadowJar>("shadowJar") {
         archiveBaseName.set("offheap-flatbuffers-shadowjar")
         manifest {
-            attributes(mapOf("Main-Class" to "com.target.nativememoryallocator.examples.map.offheap.flatbuffers.OffHeapFlatbuffersKt"))
+            attributes(mapOf("Main-Class" to "com.target.nativememoryallocator.examples.map.offheap.flatbuffers.OffHeapFlatBuffersKt"))
         }
     }
 }
