@@ -33,6 +33,8 @@ This project provides the following components:
 
 ## Using as a maven or gradle dependency
 
+Options:
+
 1. Use jitpack.io: https://jitpack.io/#target/native_memory_allocator
 
    [![](https://jitpack.io/v/target/native_memory_allocator.svg)](https://jitpack.io/#target/native_memory_allocator) 
@@ -42,6 +44,8 @@ This project provides the following components:
    Add repository to maven/gradle build: `https://jitpack.io`
    
    Add dependency to maven/gradle build: `com.github.target:native_memory_allocator:VERSION`  See [releases page](https://github.com/target/native_memory_allocator/packages/1407699) for current version.
+
+OR
 
 2. Use github packages: https://github.com/target/native_memory_allocator/packages/1407699
 
