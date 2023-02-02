@@ -31,6 +31,12 @@ This project provides the following components:
 * Metrics
     * Metrics reporter classes exist for NativeMemoryAllocator and NativeMemoryMap using Micrometer
 
+
+## Benchmarks
+
+See the `benchmarks` directory for JMH benchmarks.
+
+
 ## Using as a maven or gradle dependency
 
 Options:
