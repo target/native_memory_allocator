@@ -34,8 +34,11 @@ This project provides the following components:
 
 ## Benchmarks
 
-See the `benchmarks` directory for JMH benchmarks.
+See the [`benchmarks`](https://github.com/target/native_memory_allocator/tree/main/benchmarks) directory for JMH benchmarks.
 
+Benchmark results:
+* [GCP VM](https://github.com/target/native_memory_allocator/wiki/Benchmark-results-in-GCP-VM)
+* [Local Laptop](https://github.com/target/native_memory_allocator/wiki/Benchmark-results-in-local-laptop)
 
 ## Using as a maven or gradle dependency
 
