@@ -7,6 +7,7 @@ import com.target.nativememoryallocator.map.NativeMemoryMapBackend
 import com.target.nativememoryallocator.map.NativeMemoryMapBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer
 import mu.KotlinLogging
+import java.nio.ByteBuffer
 
 private val logger = KotlinLogging.logger {}
 
@@ -14,10 +15,10 @@ private val logger = KotlinLogging.logger {}
 /**
  * NMA implementation of OffHeapCache.
  */
-class NMAOffHeapCache : OffHeapCache<String, ByteArray> {
+class NMAOffHeapCache : OffHeapCache<String, ByteBuffer> {
 
     init {
-        logger.info { "initializing NMAOffHeapCache" }
+        logger.info { "initializing NMAOffHeapCache with asByteBuffer change" }
     }
 
     private val nativeMemoryAllocator = NativeMemoryAllocatorBuilder(
@@ -25,27 +26,27 @@ class NMAOffHeapCache : OffHeapCache<String, ByteArray> {
         nativeMemorySizeBytes = (10L * 1024 * 1024 * 1024), //10gb,
     ).build()
 
-    private val valueSerializer = object : NativeMemoryMapSerializer<ByteArray> {
-        override fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): ByteArray {
-            return onHeapMemoryBuffer.toTrimmedArray()
+    private val valueSerializer = object : NativeMemoryMapSerializer<ByteBuffer> {
+        override fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): ByteBuffer {
+            return onHeapMemoryBuffer.asByteBuffer()
         }
 
-        override fun serializeToByteArray(value: ByteArray): ByteArray {
-            return value
+        override fun serializeToByteArray(value: ByteBuffer): ByteArray {
+            return value.array()
         }
     };
 
-    private val nativeMemoryMap = NativeMemoryMapBuilder<String, ByteArray>(
+    private val nativeMemoryMap = NativeMemoryMapBuilder<String, ByteBuffer>(
         valueSerializer = valueSerializer,
         nativeMemoryAllocator = nativeMemoryAllocator,
         backend = NativeMemoryMapBackend.CAFFEINE,
     ).build()
 
-    override fun get(key: String): ByteArray? {
+    override fun get(key: String): ByteBuffer? {
         return nativeMemoryMap.get(key = key)
     }
 
-    override fun put(key: String, value: ByteArray) {
+    override fun put(key: String, value: ByteBuffer) {
         nativeMemoryMap.put(key = key, value = value)
     }
 
