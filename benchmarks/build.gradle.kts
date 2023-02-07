@@ -16,10 +16,10 @@ dependencies {
 }
 
 jmh {
-    warmupIterations.set(3)
-    iterations.set(3)
+    warmupIterations.set(5)
+    iterations.set(5)
     fork.set(1)
     forceGC.set(true)
     failOnError.set(true)
-    jvmArgs.set(listOf("-Xmx2G"))
+    jvmArgs.set(listOf("-Xmx4G"))
 }
