@@ -1,18 +1,19 @@
 package com.target.nativememoryallocator.benchmarks.impl
 
 import com.target.nativememoryallocator.benchmarks.OffHeapCache
+import java.nio.ByteBuffer
 
 /**
  * Unimplemented OffHeapCache.
  * All methods throw NotImplementedError.
  */
-object UnimplementedOffHeapCache : OffHeapCache<String, ByteArray> {
+object UnimplementedOffHeapCache : OffHeapCache<String, ByteBuffer> {
 
-    override fun get(key: String): ByteArray? {
+    override fun get(key: String): ByteBuffer? {
         throw NotImplementedError()
     }
 
-    override fun put(key: String, value: ByteArray) {
+    override fun put(key: String, value: ByteBuffer) {
         throw NotImplementedError()
     }
 

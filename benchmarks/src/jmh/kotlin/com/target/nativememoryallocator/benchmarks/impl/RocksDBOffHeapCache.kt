@@ -4,13 +4,14 @@ import com.target.nativememoryallocator.benchmarks.OffHeapCache
 import mu.KotlinLogging
 import org.rocksdb.RocksDB
 import java.io.File
+import java.nio.ByteBuffer
 
 private val logger = KotlinLogging.logger {}
 
 /**
  * RocksDB implementation of OffHeapCache.
  */
-class RocksDBOffHeapCache : OffHeapCache<String, ByteArray> {
+class RocksDBOffHeapCache : OffHeapCache<String, ByteBuffer> {
 
     private val rocksDbDir: String
 
@@ -28,12 +29,12 @@ class RocksDBOffHeapCache : OffHeapCache<String, ByteArray> {
         rocksDB = RocksDB.open(rocksDbDir)
     }
 
-    override fun get(key: String): ByteArray? {
-        return rocksDB.get(key.toByteArray())
+    override fun get(key: String): ByteBuffer? {
+        return rocksDB.get(key.toByteArray())?.let { ByteBuffer.wrap(it) }
     }
 
-    override fun put(key: String, value: ByteArray) {
-        rocksDB.put(key.toByteArray(), value)
+    override fun put(key: String, value: ByteBuffer) {
+        rocksDB.put(key.toByteArray(), value.array())
     }
 
     override fun size(): Int {

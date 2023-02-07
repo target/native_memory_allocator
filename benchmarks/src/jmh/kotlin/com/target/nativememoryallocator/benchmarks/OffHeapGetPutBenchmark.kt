@@ -5,6 +5,7 @@ import com.target.nativememoryallocator.benchmarks.impl.RocksDBOffHeapCache
 import com.target.nativememoryallocator.benchmarks.impl.UnimplementedOffHeapCache
 import mu.KotlinLogging
 import org.openjdk.jmh.annotations.*
+import java.nio.ByteBuffer
 
 private val logger = KotlinLogging.logger {}
 
@@ -26,7 +27,7 @@ open class OffHeapGetPutBenchmark {
     )
     var cacheType: String = ""
 
-    private var cache: OffHeapCache<String, ByteArray> = UnimplementedOffHeapCache
+    private var cache: OffHeapCache<String, ByteBuffer> = UnimplementedOffHeapCache
 
     @State(Scope.Thread)
     open class ThreadState {
@@ -60,7 +61,7 @@ open class OffHeapGetPutBenchmark {
         }
 
         for (i in 0 until NUM_ENTRIES) {
-            cache.put(key = i.toString(), value = ByteArray(VALUE_SIZE))
+            cache.put(key = i.toString(), value = ByteBuffer.wrap(ByteArray(VALUE_SIZE)))
         }
 
         cache.logMetadata()
@@ -78,7 +79,7 @@ open class OffHeapGetPutBenchmark {
     @Benchmark
     @Group("read_only")
     @GroupThreads(8)
-    fun readOnly(threadState: ThreadState): ByteArray? {
+    fun readOnly(threadState: ThreadState): ByteBuffer? {
         val key = threadState.nextIndex().toString()
         val value = cache.get(key = key)
         if (value == null) {
@@ -92,13 +93,13 @@ open class OffHeapGetPutBenchmark {
     @GroupThreads(8)
     fun writeOnly(threadState: ThreadState) {
         val key = threadState.nextIndex().toString()
-        cache.put(key = key, value = ByteArray(VALUE_SIZE))
+        cache.put(key = key, value = ByteBuffer.wrap(ByteArray(VALUE_SIZE)))
     }
 
     @Benchmark
     @Group("readwrite")
     @GroupThreads(6)
-    fun readwrite_get(threadState: ThreadState): ByteArray? {
+    fun readwrite_get(threadState: ThreadState): ByteBuffer? {
         val key = threadState.nextIndex().toString()
         val value = cache.get(key = key)
         if (value == null) {
@@ -112,7 +113,7 @@ open class OffHeapGetPutBenchmark {
     @GroupThreads(2)
     fun readwrite_put(threadState: ThreadState) {
         val key = threadState.nextIndex().toString()
-        cache.put(key = key, value = ByteArray(VALUE_SIZE))
+        cache.put(key = key, value = ByteBuffer.wrap(ByteArray(VALUE_SIZE)))
     }
 
 }
