@@ -18,7 +18,7 @@ private val logger = KotlinLogging.logger {}
 class NMAOffHeapCache : OffHeapCache<String, ByteBuffer> {
 
     init {
-        logger.info { "initializing NMAOffHeapCache with asByteBuffer change" }
+        logger.info { "initializing NMAOffHeapCache" }
     }
 
     private val nativeMemoryAllocator = NativeMemoryAllocatorBuilder(
