@@ -115,4 +115,18 @@ internal class CaffeineNativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
             caffeineStats = caffeineCache.stats(),
         )
 
+    /**
+     * Override hottestKeys to use caffeine eviction policy.
+     */
+    override fun hottestKeys(numKeys: Int): Set<KEY_TYPE> {
+        return caffeineCache.policy().eviction().map { it.hottest(numKeys).keys }.orElse(mutableSetOf())
+    }
+
+    /**
+     * Override coldestKeys to use caffeine eviction policy.
+     */
+    override fun coldestKeys(numKeys: Int): Set<KEY_TYPE> {
+        return caffeineCache.policy().eviction().map { it.coldest(numKeys).keys }.orElse(mutableSetOf())
+    }
+
 }

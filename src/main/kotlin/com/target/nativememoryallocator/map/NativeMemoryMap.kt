@@ -99,6 +99,28 @@ interface NativeMemoryMap<KEY_TYPE : Any, VALUE_TYPE : Any> : BaseNativeMemoryMa
      * @return [Set] of [Map.Entry] for the map
      */
     val entries: Set<Map.Entry<KEY_TYPE, NativeMemoryBufferMetadata>>
+
+    /**
+     * [Set] of most-used keys in the map.
+     *
+     * This will only work if [NativeMemoryMapBackend.CAFFEINE] is used,
+     * and caffeine is configured with maximumSize eviction policy.
+     *
+     * @param numKeys number of keys to return
+     * @return [Set] of hottest [KEY_TYPE] keys
+     */
+    fun hottestKeys(numKeys: Int): Set<KEY_TYPE>
+
+    /**
+     * [Set] of least-used keys in the map.
+     *
+     * This will only work if [NativeMemoryMapBackend.CAFFEINE] is used,
+     * and caffeine is configured with maximumSize eviction policy.
+     *
+     * @param numKeys number of keys to return
+     * @return [Set] of coldest [KEY_TYPE] keys
+     */
+    fun coldestKeys(numKeys: Int): Set<KEY_TYPE>
 }
 
 /**

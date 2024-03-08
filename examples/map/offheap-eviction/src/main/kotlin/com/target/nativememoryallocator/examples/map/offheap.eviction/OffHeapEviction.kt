@@ -68,6 +68,8 @@ private class OffHeapEviction {
 
         logger.info { "nativeMemoryMap.size = ${nativeMemoryMap.size}" }
         logger.info { "nativeMemoryAllocator.nativeMemoryAllocatorMetadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}" }
+        logger.info { "nativeMemoryMap.hottestKeys(10) = ${nativeMemoryMap.hottestKeys(numKeys = 10)}" }
+        logger.info { "nativeMemoryMap.coldestKeys(10) = ${nativeMemoryMap.coldestKeys(numKeys = 10)}" }
 
         val randomIndexValue = nativeMemoryMap.get(key = randomIndex)
         randomIndexValue?.let {

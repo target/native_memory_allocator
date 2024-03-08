@@ -140,4 +140,8 @@ internal class NativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
 
     override val operationCounters: NativeMemoryMapOperationCounters? = null
 
+    override fun hottestKeys(numKeys: Int): Set<KEY_TYPE> = emptySet()
+
+    override fun coldestKeys(numKeys: Int): Set<KEY_TYPE> = emptySet()
+
 }
