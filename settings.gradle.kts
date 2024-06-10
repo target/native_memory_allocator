@@ -10,4 +10,5 @@ include(
     "examples:map:offheap-eviction",
     "examples:map:offheap-eviction-operationcounters",
     "examples:map:offheap-flatbuffers",
+    "examples:map:referencecount",
 )
