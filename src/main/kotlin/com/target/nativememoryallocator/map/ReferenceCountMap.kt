@@ -35,7 +35,6 @@ class ReferenceCountMap<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private fun freeNativeMemoryBuffer(
         nativeMemoryBuffer: NativeMemoryBuffer,
     ) {
-        println("freeNativeMemoryBuffer")
         nativeMemoryAllocator.freeNativeMemoryBuffer(nativeMemoryBuffer)
     }
 
