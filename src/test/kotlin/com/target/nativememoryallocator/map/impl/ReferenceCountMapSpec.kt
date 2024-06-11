@@ -54,9 +54,11 @@ fun main() {
         key = "123", value = "345",
     )
 
-    map.put(
-        key = "234", value = "234",
-    )
+    for (i in 0 until 100) {
+        map.put(
+            key = "234", value = "234",
+        )
+    }
 
     logger.info { "map.size = ${map.size}" }
 
@@ -66,7 +68,9 @@ fun main() {
 
     logger.info { "got value = $value" }
 
-    value = map.get(key = "234")
+    for (i in 0 until 100) {
+        value = map.get(key = "234")
+    }
 
     logger.info { "got value = $value" }
 
