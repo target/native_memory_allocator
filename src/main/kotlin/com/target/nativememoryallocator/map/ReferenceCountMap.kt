@@ -35,7 +35,16 @@ class ReferenceCountMap<KEY_TYPE : Any, VALUE_TYPE : Any>(
     private fun freeNativeMemoryBuffer(
         nativeMemoryBuffer: NativeMemoryBuffer,
     ) {
+        println("freeNativeMemoryBuffer")
         nativeMemoryAllocator.freeNativeMemoryBuffer(nativeMemoryBuffer)
+    }
+
+    private fun decrementReferenceCount(
+        referenceCountValue: ReferenceCountValue,
+    ) {
+        if (referenceCountValue.decrementReferenceCount() == 0) {
+            freeNativeMemoryBuffer(referenceCountValue.nativeMemoryBuffer)
+        }
     }
 
     fun put(key: KEY_TYPE, value: VALUE_TYPE) {
@@ -56,9 +65,7 @@ class ReferenceCountMap<KEY_TYPE : Any, VALUE_TYPE : Any>(
         val previousValue = innerMap.put(key = key, value = newRefCountedValue)
 
         if (previousValue != null) {
-            if (previousValue.decrementReferenceCount() == 0) {
-                freeNativeMemoryBuffer(previousValue.nativeMemoryBuffer)
-            }
+            decrementReferenceCount(previousValue)
         }
     }
 
@@ -81,24 +88,43 @@ class ReferenceCountMap<KEY_TYPE : Any, VALUE_TYPE : Any>(
 
             return deserializedValue
         } finally {
-            if (mapValue.decrementReferenceCount() == 0) {
-                freeNativeMemoryBuffer(mapValue.nativeMemoryBuffer)
-            }
+            decrementReferenceCount(mapValue)
         }
+    }
 
+
+    fun getWithBuffer(
+        key: KEY_TYPE,
+        onHeapMemoryBuffer: OnHeapMemoryBuffer,
+    ): VALUE_TYPE? {
+        val mapValue = innerMap.computeIfPresent(key) { _, currentValue ->
+            currentValue.incrementReferenceCount()
+
+            currentValue
+        } ?: return null
+
+        try {
+            mapValue.nativeMemoryBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer)
+
+            val deserializedValue =
+                valueSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
+
+            return deserializedValue
+        } finally {
+            decrementReferenceCount(mapValue)
+        }
     }
 
     fun delete(key: KEY_TYPE) {
         val previousValue = innerMap.remove(key)
 
         if (previousValue != null) {
-            if (previousValue.decrementReferenceCount() == 0) {
-                freeNativeMemoryBuffer(previousValue.nativeMemoryBuffer)
-            }
+            decrementReferenceCount(previousValue)
         }
     }
 
-    val size: Int = innerMap.size
+    val size: Int
+        get() = innerMap.size
 }
 
 fun main() {
@@ -134,8 +160,12 @@ fun main() {
     println("map.size = ${map.size}")
 
     var value = map.get(key = "123")
+    println("get value = $value")
 
-    println("got value = $value")
+    val onHeapMemoryBuffer = OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = 2)
+    value = map.getWithBuffer(key = "123", onHeapMemoryBuffer = onHeapMemoryBuffer)
+
+    println("getWithBuffer value = $value")
 
     map.put(
         key = "123", value = "345",
