@@ -91,7 +91,6 @@ class ReferenceCountMap<KEY_TYPE : Any, VALUE_TYPE : Any>(
         }
     }
 
-
     fun getWithBuffer(
         key: KEY_TYPE,
         onHeapMemoryBuffer: OnHeapMemoryBuffer,
@@ -188,4 +187,6 @@ fun main() {
     println("after delete got value = $value")
 
     println("map.size = ${map.size}")
+
+    println("nma metadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}")
 }
