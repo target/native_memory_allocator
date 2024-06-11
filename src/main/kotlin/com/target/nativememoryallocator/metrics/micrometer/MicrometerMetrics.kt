@@ -2,6 +2,7 @@ package com.target.nativememoryallocator.metrics.micrometer
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.nativememoryallocator.map.BaseNativeMemoryMap
+import com.target.nativememoryallocator.map.ReferenceCountMap
 import io.micrometer.core.instrument.Gauge
 import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
@@ -150,5 +151,19 @@ class MicrometerNativeMemoryMapMetrics(
                 tags = tags,
             ) { operationCounters.numGetsNonNullValue.toDouble() }
         }
+    }
+}
+
+class MicrometerReferenceCountMapMetrics(
+    referenceCountMap: ReferenceCountMap<*, *>,
+    meterRegistry: MeterRegistry,
+    tags: Tags = Tags.empty(),
+) {
+    init {
+        meterRegistry.registerGauge(
+            name = "nativeMemoryMap.size",
+            gaugeObject = referenceCountMap,
+            tags = tags,
+        ) { referenceCountMap.size.toDouble() }
     }
 }
