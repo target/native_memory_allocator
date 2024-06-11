@@ -5,6 +5,9 @@ import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer
 import com.target.nativememoryallocator.map.ReferenceCountMap
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 // TODO make unit test
 fun main() {
@@ -31,44 +34,52 @@ fun main() {
         valueSerializer = TestSerializer(),
     )
 
-    println("map.size = ${map.size}")
+    logger.info { "map.size = ${map.size}" }
 
     map.put(
         key = "123", value = "234",
     )
 
-    println("map.size = ${map.size}")
+    logger.info { "map.size = ${map.size}" }
 
     var value = map.get(key = "123")
-    println("get value = $value")
+    logger.info { "get value = $value" }
 
     val onHeapMemoryBuffer = OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = 2)
     value = map.getWithBuffer(key = "123", onHeapMemoryBuffer = onHeapMemoryBuffer)
 
-    println("getWithBuffer value = $value")
+    logger.info { "getWithBuffer value = $value" }
 
     map.put(
         key = "123", value = "345",
     )
 
-    println("map.size = ${map.size}")
+    map.put(
+        key = "234", value = "234",
+    )
+
+    logger.info { "map.size = ${map.size}" }
+
+    logger.info { "nma metadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}" }
 
     value = map.get(key = "123")
 
-    println("got value = $value")
+    logger.info { "got value = $value" }
 
     value = map.get(key = "234")
 
-    println("got value = $value")
+    logger.info { "got value = $value" }
 
     map.delete(key = "234")
+    logger.info { "after delete 234 nma metadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}" }
+
     map.delete(key = "123")
 
     value = map.get(key = "123")
 
-    println("after delete got value = $value")
+    logger.info { "after delete got value = $value" }
 
-    println("map.size = ${map.size}")
+    logger.info { "map.size = ${map.size}" }
 
-    println("nma metadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}")
+    logger.info { "nma metadata = ${nativeMemoryAllocator.nativeMemoryAllocatorMetadata}" }
 }
