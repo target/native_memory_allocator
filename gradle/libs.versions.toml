@@ -1,0 +1,72 @@
+[versions]
+common-schema-logging = "2.11.0"
+hoplite-config-loader = "2.1.1"
+jackson = "2.18.3"
+janino = "3.1.12"
+jupiter = "5.12.1"
+kafka-client = "6.8.1"
+kasechange = "1.4.1"
+kotlin-coroutines = "1.10.1"
+metrics-publisher = "3.11.1"
+mockk = "1.13.17"
+okhttp = "4.12.0"
+okhttp-interceptors = "3.8.0"
+spotless = "7.0.2"
+http4k = "6.5.2.0"
+http4k-server = "4.1.0"
+
+# in use:
+caffeine = "3.2.0"
+kotlin-core = "2.1.0"
+kotlin-logging = "7.0.6"
+micrometer-core = "1.14.6"
+objenesis = "3.4"
+kotest = "5.9.1"
+
+
+[libraries]
+#in use:
+caffeine =  { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+kotlinlogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
+objnesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
+micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer-core" }
+kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+
+hoplite-config-loader-hocon = { module = "toolshed:hoplite-config-loader-hocon", version.ref = "hoplite-config-loader" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
+jackson-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310", version.ref = "jackson" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }
+jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "jupiter" }
+jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "jupiter" }
+kafka-client = { module = "toolshed:kafka-client", version.ref = "kafka-client" }
+kasechange = { module = "net.pearx.kasechange:kasechange", version.ref = "kasechange" }
+kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-assertions-json = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
+kotest-extensions = { module = "io.kotest:kotest-extensions", version.ref = "kotest" }
+kotest-framework = { module = "io.kotest:kotest-framework-api-jvm", version.ref = "kotest" }
+kotest-property = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
+kotest-runner-jvm = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
+metrics-publisher = { module = "toolshed:metrics-publisher", version.ref = "metrics-publisher" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-interceptors = { module = "toolshed:okhttp-interceptors", version.ref = "okhttp-interceptors" }
+okhttp-mock-server = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
+tcs-logging = { module = "toolshed:tcs-logging-kotlin-logback", version.ref = "common-schema-logging" }
+http4k-client-okhttp = { module = "org.http4k:http4k-client-okhttp", version.ref = "http4k" }
+http4k-contract = { module = "org.http4k:http4k-contract", version.ref = "http4k" }
+http4k-core = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+http4k-format-jackson = { module = "org.http4k:http4k-format-jackson", version.ref = "http4k" }
+http4k-micrometer = { module = "org.http4k:http4k-metrics-micrometer", version.ref = "http4k" }
+http4k-server = { module = "toolshed:http4k-server", version.ref = "http4k-server" }
+http4k-server-undertow = { module = "org.http4k:http4k-server-undertow", version.ref = "http4k" }
+
+[bundles]
+testing = ["jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "mockk"]
+jackson = ["jackson-kotlin", "jackson-jdk8", "jackson-jsr310", "jackson-databind"]
+http4k = ["http4k-core", "http4k-format-jackson", "http4k-contract", "http4k-micrometer", "http4k-server-undertow"]
+[plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

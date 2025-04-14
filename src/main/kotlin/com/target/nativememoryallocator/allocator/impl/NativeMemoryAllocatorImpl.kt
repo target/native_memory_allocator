@@ -5,7 +5,7 @@ import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorMetadata
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.buffer.impl.NativeMemoryBufferImpl
 import com.target.nativememoryallocator.unsafe.UnsafeContainer
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
@@ -199,6 +199,7 @@ internal class NativeMemoryAllocatorImpl(
             bufferImpl.freed -> {
                 throw IllegalStateException("attempt to resize already freed buffer $buffer")
             }
+
             bufferImpl.capacityBytes != newCapacityBytes -> {
                 val newPagesNeeded = computePagesNeeded(newCapacityBytes)
 
@@ -206,6 +207,7 @@ internal class NativeMemoryAllocatorImpl(
                     newPagesNeeded == bufferImpl.pages.size -> {
                         bufferImpl.capacityBytes = newCapacityBytes
                     }
+
                     newPagesNeeded < bufferImpl.pages.size -> {
                         shrinkNativeMemoryBuffer(
                             bufferImpl = bufferImpl,
@@ -213,6 +215,7 @@ internal class NativeMemoryAllocatorImpl(
                             newPagesNeeded = newPagesNeeded,
                         )
                     }
+
                     else -> {
                         expandNativeMemoryBuffer(
                             bufferImpl = bufferImpl,
