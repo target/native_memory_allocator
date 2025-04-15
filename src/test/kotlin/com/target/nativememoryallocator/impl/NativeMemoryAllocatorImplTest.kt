@@ -640,4 +640,62 @@ class NativeMemoryAllocatorImplTest {
         nativeMemoryAllocator.numFreeExceptions shouldBe 0
     }
 
+    @Test
+    fun `test allocation of 10_000 bytes, then resize to negative value`() {
+        val pageSizeBytes = 4_096 // 4kb
+        val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+        val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+        val mockNativeMemoryPointer = 0x80000000
+
+        every {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        } returns mockNativeMemoryPointer
+
+        val nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+            pageSizeBytes = pageSizeBytes,
+            nativeMemorySizeBytes = nativeMemorySizeBytes,
+            zeroNativeMemoryOnStartup = false,
+        )
+
+        val buffer = nativeMemoryAllocator.allocateNativeMemoryBuffer(
+            capacityBytes = 10_000,
+        )
+
+        verify(exactly = 1) {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        }
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages - 3
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 3
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 10_000
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe 3
+
+        // resize to -1
+        shouldThrow<IllegalArgumentException> {
+            nativeMemoryAllocator.resizeNativeMemoryBuffer(
+                buffer = buffer,
+                newCapacityBytes = -1,
+            )
+        }
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages - 3
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 3
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 10_000
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe 3
+    }
+
 }
