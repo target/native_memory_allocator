@@ -1,6 +1,6 @@
 # native_memory_allocator
 
-A library which uses sun.misc.Unsafe to allocate off-heap native memory.
+O(1) malloc for off-heap storage in Kotlin, and a NativeMemoryMap based on [Caffeine](https://github.com/ben-manes/caffeine) so you don't have to call it directly.
 
 ## Motivation
 
