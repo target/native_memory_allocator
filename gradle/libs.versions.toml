@@ -22,6 +22,8 @@ kotlin-logging = "7.0.6"
 micrometer-core = "1.14.6"
 objenesis = "3.4"
 
+# in use for tests
+logback = "1.5.18"
 kotest = "5.9.1"
 guava = "33.4.8-jre"
 
@@ -35,6 +37,7 @@ micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "mic
 # in use for tests:
 guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava" }
 kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
 hoplite-config-loader-hocon = { module = "toolshed:hoplite-config-loader-hocon", version.ref = "hoplite-config-loader" }
 jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
@@ -69,7 +72,7 @@ http4k-server = { module = "toolshed:http4k-server", version.ref = "http4k-serve
 http4k-server-undertow = { module = "org.http4k:http4k-server-undertow", version.ref = "http4k" }
 
 [bundles]
-testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "mockk"]
+testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "logback-classic", "mockk"]
 jackson = ["jackson-kotlin", "jackson-jdk8", "jackson-jsr310", "jackson-databind"]
 http4k = ["http4k-core", "http4k-format-jackson", "http4k-contract", "http4k-micrometer", "http4k-server-undertow"]
 [plugins]
