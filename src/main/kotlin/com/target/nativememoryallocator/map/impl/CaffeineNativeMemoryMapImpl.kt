@@ -64,7 +64,7 @@ internal class CaffeineEvictionListener<KEY_TYPE : Any>(
      */
     override fun onRemoval(key: KEY_TYPE?, value: NativeMemoryBuffer?, cause: RemovalCause) {
         try {
-            if ((cause?.wasEvicted() == true) && (value?.freed == false)) {
+            if (cause.wasEvicted() && (value?.freed == false)) {
                 nativeMemoryAllocator.freeNativeMemoryBuffer(value)
             }
         } catch (e: Exception) {
