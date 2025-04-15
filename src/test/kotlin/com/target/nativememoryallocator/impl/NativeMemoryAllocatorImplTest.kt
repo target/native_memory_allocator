@@ -481,4 +481,128 @@ class NativeMemoryAllocatorImplTest {
         buffer.numPages shouldBe 0
     }
 
+    @Test
+    fun `test allocation of 5_000 bytes, then resize out of memory, then free`() {
+        val pageSizeBytes = 4_096 // 4kb
+        val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+        val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+        val mockNativeMemoryPointer = 0x80000000
+
+        every {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        } returns mockNativeMemoryPointer
+
+        val nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+            pageSizeBytes = pageSizeBytes,
+            nativeMemorySizeBytes = nativeMemorySizeBytes,
+            zeroNativeMemoryOnStartup = false,
+        )
+
+        val buffer = nativeMemoryAllocator.allocateNativeMemoryBuffer(
+            capacityBytes = 5_000,
+        )
+
+        verify(exactly = 1) {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        }
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages - 2
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 2
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 5_000
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe 2
+
+        // resize buffer to max capacity
+        nativeMemoryAllocator.resizeNativeMemoryBuffer(
+            buffer = buffer,
+            newCapacityBytes = nativeMemorySizeBytes.toInt(), //1gb
+        )
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe 0
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe totalNumPages
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe nativeMemorySizeBytes.toInt()
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe totalNumPages
+
+        // resize buffer to 1 page
+        nativeMemoryAllocator.resizeNativeMemoryBuffer(
+            buffer = buffer,
+            newCapacityBytes = 4_096,
+        )
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages - 1
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 1
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 4_096
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe 1
+
+        // resize buffer 1 byte more than max capacity
+        shouldThrow<IllegalStateException> {
+            nativeMemoryAllocator.resizeNativeMemoryBuffer(
+                buffer = buffer,
+                newCapacityBytes = nativeMemorySizeBytes.toInt() + 1,
+            )
+        }
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages - 1
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 1
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 1
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        val expectedNativeMemoryAllocatorMetadata = NativeMemoryAllocatorMetadata(
+            pageSizeBytes = pageSizeBytes,
+            nextFreePageIndex = 1,
+            numFreePages = totalNumPages - 1,
+            totalNumPages = totalNumPages,
+            numUsedPages = 1,
+            numAllocationExceptions = 1,
+            numFreeExceptions = 0,
+            nativeMemorySizeBytes = nativeMemorySizeBytes,
+        )
+
+        nativeMemoryAllocator.nativeMemoryAllocatorMetadata shouldBe expectedNativeMemoryAllocatorMetadata
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 4_096
+        buffer.freed shouldBe false
+        buffer.numPages shouldBe 1
+
+        // free buffer
+        nativeMemoryAllocator.freeNativeMemoryBuffer(
+            buffer = buffer,
+        )
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 0
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 1
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+
+        buffer.pageSizeBytes shouldBe pageSizeBytes
+        buffer.capacityBytes shouldBe 0
+        buffer.freed shouldBe true
+        buffer.numPages shouldBe 0
+    }
+
 }
