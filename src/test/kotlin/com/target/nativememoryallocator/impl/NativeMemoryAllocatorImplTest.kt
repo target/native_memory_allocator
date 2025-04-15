@@ -605,4 +605,39 @@ class NativeMemoryAllocatorImplTest {
         buffer.numPages shouldBe 0
     }
 
+    @Test
+    fun `test allocation of negative capacity`() {
+        val pageSizeBytes = 4_096 // 4kb
+        val nativeMemorySizeBytes = 1L * 1024 * 1024 * 1024 // 1gb
+        val totalNumPages = (nativeMemorySizeBytes / pageSizeBytes).toInt()
+        val mockNativeMemoryPointer = 0x80000000
+
+        every {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        } returns mockNativeMemoryPointer
+
+        val nativeMemoryAllocator = NativeMemoryAllocatorImpl(
+            pageSizeBytes = pageSizeBytes,
+            nativeMemorySizeBytes = nativeMemorySizeBytes,
+            zeroNativeMemoryOnStartup = false,
+        )
+
+        shouldThrow<IllegalArgumentException> {
+            nativeMemoryAllocator.allocateNativeMemoryBuffer(
+                capacityBytes = -1,
+            )
+        }
+
+        verify(exactly = 1) {
+            mockUnsafe.allocateMemory(nativeMemorySizeBytes)
+        }
+
+        nativeMemoryAllocator.baseNativeMemoryPointer() shouldBe mockNativeMemoryPointer
+        nativeMemoryAllocator.numFreePages shouldBe totalNumPages
+        nativeMemoryAllocator.totalNumPages shouldBe totalNumPages
+        nativeMemoryAllocator.numUsedPages shouldBe 0
+        nativeMemoryAllocator.numAllocationExceptions shouldBe 0
+        nativeMemoryAllocator.numFreeExceptions shouldBe 0
+    }
+
 }
