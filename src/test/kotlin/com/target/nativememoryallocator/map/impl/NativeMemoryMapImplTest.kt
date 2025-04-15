@@ -3,14 +3,17 @@ package com.target.nativememoryallocator.map.impl
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
+import com.target.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.nativememoryallocator.map.NativeMemoryMap
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.verify
 import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.AbstractMap
 import java.util.concurrent.ConcurrentHashMap
@@ -26,6 +29,10 @@ class NativeMemoryMapImplTest {
 
     private val mockNativeMemoryBuffer = mockk<NativeMemoryBuffer>()
 
+    @BeforeEach
+    fun beforeEach() {
+        mockkObject(OnHeapMemoryBufferFactory)
+    }
 
     @AfterEach
     fun afterEach() {
@@ -185,6 +192,89 @@ class NativeMemoryMapImplTest {
         }
         verify(exactly = 1) {
             mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+        }
+    }
+
+
+    @Test
+    fun `test put then get useThreadLocalOnHeapReadBuffer = false`() {
+        val serializedValue = ByteArray(10)
+        Random.nextBytes(serializedValue)
+
+        val putValue = mockk<TestValueObject>()
+
+        val getDeserializedValue = mockk<TestValueObject>()
+
+        val onHeapMemoryBuffer = mockk<OnHeapMemoryBuffer>()
+
+        val nativeMemoryMap = NativeMemoryMapImpl(
+            valueSerializer = mockTestValueObjectNativeMemoryMapSerializer,
+            nativeMemoryAllocator = mockNativeMemoryAllocator,
+            useThreadLocalOnHeapReadBuffer = false,
+            threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+            cacheMap = ConcurrentHashMap(),
+        )
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
+        } returns serializedValue
+
+        every {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        } returns mockNativeMemoryBuffer
+
+        every {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue)
+        } returns Unit
+
+        every {
+            OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = 10)
+        } returns onHeapMemoryBuffer
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
+        } returns getDeserializedValue
+
+        val putResult = nativeMemoryMap.put(key = 1, value = putValue)
+        putResult shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        every {
+            mockNativeMemoryBuffer.capacityBytes
+        } returns 10
+
+        every {
+            mockNativeMemoryBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer)
+        } returns Unit
+
+        val getResult = nativeMemoryMap.get(key = 1)
+        getResult shouldBe getDeserializedValue
+
+        nativeMemoryMap.entries shouldBe setOf(
+            AbstractMap.SimpleEntry(
+                1,
+                mockNativeMemoryBuffer,
+            )
+        )
+        nativeMemoryMap.keys shouldBe setOf(1)
+        nativeMemoryMap.size shouldBe 1
+
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue)
+        }
+        verify(exactly = 1) {
+            OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = 10)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer)
+        }
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
         }
     }
 }
