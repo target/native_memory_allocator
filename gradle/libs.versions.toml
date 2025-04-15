@@ -21,15 +21,19 @@ kotlin-core = "2.1.0"
 kotlin-logging = "7.0.6"
 micrometer-core = "1.14.6"
 objenesis = "3.4"
-kotest = "5.9.1"
 
+kotest = "5.9.1"
+guava = "33.4.8-jre"
 
 [libraries]
 #in use:
-caffeine =  { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 kotlinlogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 objnesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
 micrometer-core = { module = "io.micrometer:micrometer-core", version.ref = "micrometer-core" }
+
+# in use for tests:
+guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava" }
 kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 
 hoplite-config-loader-hocon = { module = "toolshed:hoplite-config-loader-hocon", version.ref = "hoplite-config-loader" }
@@ -65,7 +69,7 @@ http4k-server = { module = "toolshed:http4k-server", version.ref = "http4k-serve
 http4k-server-undertow = { module = "org.http4k:http4k-server-undertow", version.ref = "http4k" }
 
 [bundles]
-testing = ["jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "mockk"]
+testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "mockk"]
 jackson = ["jackson-kotlin", "jackson-jdk8", "jackson-jsr310", "jackson-databind"]
 http4k = ["http4k-core", "http4k-format-jackson", "http4k-contract", "http4k-micrometer", "http4k-server-undertow"]
 [plugins]
