@@ -1,3 +1,19 @@
-build/
+.gradle
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+build
+.kotlintest
+out
+*.ipr
+*.iml
+*.iws
+
+.DS_Store
+
+*.bkp
 .idea/
-.gradle/
