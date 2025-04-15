@@ -53,4 +53,28 @@ class NativeMemoryBufferImplTest {
         readRetVal shouldBe 123.toByte()
         verify(exactly = 1) { mockUnsafe.getByte(2L * 4_096) }
     }
+
+    @Test
+    fun `readByte(4095) reads the correct data at the correct offset`() {
+        val pages = ArrayList<NativeMemoryPage>()
+        pages.add(NativeMemoryPage(2L * 4_096))
+        pages.add(NativeMemoryPage(1L * 4_096))
+        pages.add(NativeMemoryPage(0L * 4_096))
+
+        val nativeMemoryBufferImpl = NativeMemoryBufferImpl(
+            pageSizeBytes = 4_096,
+            capacityBytes = 3 * (4_096),
+            freed = false,
+            pages = pages,
+        )
+
+        every {
+            mockUnsafe.getByte((2L * 4_096) + 4_095)
+        } returns 42
+
+        val readRetVal = nativeMemoryBufferImpl.readByte(offset = 4_095)
+
+        readRetVal shouldBe 42.toByte()
+        verify(exactly = 1) { mockUnsafe.getByte((2L * 4_096) + 4_095) }
+    }
 }
