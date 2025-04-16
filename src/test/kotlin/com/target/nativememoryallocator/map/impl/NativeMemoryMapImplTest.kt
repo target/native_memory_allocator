@@ -385,4 +385,59 @@ class NativeMemoryMapImplTest {
             mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
         }
     }
+
+    @Test
+    fun `test put then delete`() {
+        val serializedValue = ByteArray(10)
+        Random.nextBytes(serializedValue)
+
+        val putValue = mockk<TestValueObject>()
+
+        val nativeMemoryMap = NativeMemoryMapImpl(
+            valueSerializer = mockTestValueObjectNativeMemoryMapSerializer,
+            nativeMemoryAllocator = mockNativeMemoryAllocator,
+            useThreadLocalOnHeapReadBuffer = true,
+            threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+            cacheMap = ConcurrentHashMap(),
+        )
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
+        } returns serializedValue
+
+        every {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        } returns mockNativeMemoryBuffer
+
+        every {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue)
+        } returns Unit
+
+        every {
+            mockNativeMemoryAllocator.freeNativeMemoryBuffer(buffer = mockNativeMemoryBuffer)
+        } returns Unit
+
+        val putResult1 = nativeMemoryMap.put(key = 1, value = putValue)
+        putResult1 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        val putResult2 = nativeMemoryMap.put(key = 1, value = null)
+        putResult2 shouldBe NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER
+
+        nativeMemoryMap.entries.isEmpty() shouldBe true
+        nativeMemoryMap.keys.isEmpty() shouldBe true
+        nativeMemoryMap.size shouldBe 0
+
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryAllocator.freeNativeMemoryBuffer(buffer = mockNativeMemoryBuffer)
+        }
+    }
 }
