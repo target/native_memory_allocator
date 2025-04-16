@@ -277,4 +277,112 @@ class NativeMemoryMapImplTest {
             mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
         }
     }
+
+    @Test
+    fun `test put reuse buffer`() {
+        val serializedValue1 = ByteArray(10)
+        Random.nextBytes(serializedValue1)
+
+        val serializedValue2 = ByteArray(20)
+        Random.nextBytes(serializedValue2)
+
+        val putValue1 = mockk<TestValueObject>()
+
+        val putValue2 = mockk<TestValueObject>()
+
+        val threadLocalReadBuffer = mockk<OnHeapMemoryBuffer>()
+
+        val getDeserializedValue = mockk<TestValueObject>()
+
+        val nativeMemoryMap = NativeMemoryMapImpl(
+            valueSerializer = mockTestValueObjectNativeMemoryMapSerializer,
+            nativeMemoryAllocator = mockNativeMemoryAllocator,
+            useThreadLocalOnHeapReadBuffer = true,
+            threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+            cacheMap = ConcurrentHashMap(),
+        )
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue1)
+        } returns serializedValue1
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue2)
+        } returns serializedValue2
+
+        every {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        } returns mockNativeMemoryBuffer
+
+        every {
+            mockNativeMemoryAllocator.resizeNativeMemoryBuffer(
+                buffer = mockNativeMemoryBuffer,
+                newCapacityBytes = 20
+            )
+        } returns Unit
+
+        every {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue1)
+        } returns Unit
+
+        every {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue2)
+        } returns Unit
+
+        nativeMemoryMap.threadLocalOnHeapReadBuffer!!.set(threadLocalReadBuffer)
+
+        every {
+            mockNativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)
+        } returns Unit
+
+        every {
+            mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+        } returns getDeserializedValue
+
+        val putResult1 = nativeMemoryMap.put(key = 1, value = putValue1)
+        putResult1 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        val putResult2 = nativeMemoryMap.put(key = 1, value = putValue2)
+        putResult2 shouldBe NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER
+
+        val getResult = nativeMemoryMap.get(key = 1)
+        getResult shouldBe getDeserializedValue
+
+        nativeMemoryMap.entries shouldBe setOf(
+            AbstractMap.SimpleEntry(
+                1,
+                mockNativeMemoryBuffer,
+            ),
+        )
+        nativeMemoryMap.keys shouldBe setOf(1)
+        nativeMemoryMap.size shouldBe 1
+
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue1)
+        }
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.serializeToByteArray(value = putValue2)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryAllocator.allocateNativeMemoryBuffer(capacityBytes = 10)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryAllocator.resizeNativeMemoryBuffer(
+                buffer = mockNativeMemoryBuffer,
+                newCapacityBytes = 20
+            )
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue1)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyFromArray(byteArray = serializedValue2)
+        }
+        verify(exactly = 1) {
+            mockNativeMemoryBuffer.copyToOnHeapMemoryBuffer(threadLocalReadBuffer)
+        }
+        verify(exactly = 1) {
+            mockTestValueObjectNativeMemoryMapSerializer.deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer = threadLocalReadBuffer)
+        }
+    }
 }
