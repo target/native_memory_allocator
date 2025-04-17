@@ -114,4 +114,77 @@ class OperationCountedNativeMemoryMapImplTest {
         verify(exactly = 1) { mockNativeMemoryMap.put(key = 1, value = testValueObject) }
     }
 
+    @Test
+    fun `test put reused buffer`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        val testValueObject = mockk<TestValueObject>()
+
+        every {
+            mockNativeMemoryMap.put(key = 1, value = testValueObject)
+        } returns NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER
+
+        val putResult = operationCountedNativeMemoryMapImpl.put(key = 1, value = testValueObject)
+
+        putResult shouldBe NativeMemoryMap.PutResult.REUSED_EXISTING_BUFFER
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numPutsReusedBuffer = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.put(key = 1, value = testValueObject) }
+    }
+
+    @Test
+    fun `test get returning null`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        every {
+            mockNativeMemoryMap.get(key = 1)
+        } returns null
+
+        val getResult = operationCountedNativeMemoryMapImpl.get(key = 1)
+
+        getResult shouldBe null
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numGetsNullValue = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.get(key = 1) }
+    }
+
+    @Test
+    fun `test get returning non-null`() {
+        val mockResult = mockk<TestValueObject>()
+
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        every {
+            mockNativeMemoryMap.get(key = 1)
+        } returns mockResult
+
+        val getResult = operationCountedNativeMemoryMapImpl.get(key = 1)
+
+        getResult shouldBe mockResult
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numGetsNonNullValue = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.get(key = 1) }
+    }
+
 }
