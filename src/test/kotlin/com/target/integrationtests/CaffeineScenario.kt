@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.integrationtests
+package com.target.integrationtests
 
 import com.google.common.testing.FakeTicker
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder

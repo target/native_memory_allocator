@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.integrationtests
+package com.target.integrationtests
 
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer

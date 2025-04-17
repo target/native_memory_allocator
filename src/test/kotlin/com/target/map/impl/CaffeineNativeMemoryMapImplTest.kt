@@ -1,8 +1,9 @@
-package com.target.nativememoryallocator.map.impl
+package com.target.map.impl
 
 import com.github.benmanes.caffeine.cache.RemovalCause
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
+import com.target.nativememoryallocator.map.impl.CaffeineEvictionListener
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk

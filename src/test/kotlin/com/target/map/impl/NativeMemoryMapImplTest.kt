@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.map.impl
+package com.target.map.impl
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
@@ -6,6 +6,7 @@ import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
 import com.target.nativememoryallocator.map.NativeMemoryMap
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer
+import com.target.nativememoryallocator.map.impl.NativeMemoryMapImpl
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every

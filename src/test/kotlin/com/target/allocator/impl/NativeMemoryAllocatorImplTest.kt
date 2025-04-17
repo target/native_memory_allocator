@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.impl
+package com.target.allocator.impl
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorMetadata
 import com.target.nativememoryallocator.allocator.impl.NativeMemoryAllocatorImpl

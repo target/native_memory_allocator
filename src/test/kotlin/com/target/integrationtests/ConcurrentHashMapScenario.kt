@@ -1,4 +1,4 @@
-package com.target.nativememoryallocator.integrationtests
+package com.target.integrationtests
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMap

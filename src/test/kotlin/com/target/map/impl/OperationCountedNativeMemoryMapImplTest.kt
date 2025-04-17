@@ -1,6 +1,8 @@
-package com.target.nativememoryallocator.map.impl
+package com.target.map.impl
 
 import com.target.nativememoryallocator.map.NativeMemoryMap
+import com.target.nativememoryallocator.map.impl.OperationCountedNativeMemoryMapImpl
+import com.target.nativememoryallocator.map.impl.OperationCountersImpl
 import io.kotest.matchers.shouldBe
 import io.mockk.clearAllMocks
 import io.mockk.every
