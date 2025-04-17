@@ -187,4 +187,49 @@ class OperationCountedNativeMemoryMapImplTest {
         verify(exactly = 1) { mockNativeMemoryMap.get(key = 1) }
     }
 
+    @Test
+    fun `test delete freed buffer`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        every {
+            mockNativeMemoryMap.delete(key = 1)
+        } returns true
+
+        val deleteResult = operationCountedNativeMemoryMapImpl.delete(key = 1)
+
+        deleteResult shouldBe true
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numDeletesFreedBuffer = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.delete(key = 1) }
+    }
+
+    @Test
+    fun `test delete no change`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+        every {
+            mockNativeMemoryMap.delete(key = 1)
+        } returns false
+
+        val deleteResult = operationCountedNativeMemoryMapImpl.delete(key = 1)
+
+        deleteResult shouldBe false
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numDeletesNoChange = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.delete(key = 1) }
+    }
+
 }
