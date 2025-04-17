@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
     repositories {
         mavenLocal()
@@ -40,14 +38,6 @@ dependencies {
     api(libs.caffeine)
 
     testImplementation(rootProject.libs.bundles.testing)
-
-//    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
-//    testImplementation("org.spekframework.spek2:spek-runner-junit5:2.0.17")
-//    testImplementation("io.mockk:mockk:1.12.2")
-//    testImplementation(platform("org.junit:junit-bom:5.8.2"))
-//    testImplementation("org.junit.jupiter:junit-jupiter")
-//    testImplementation("ch.qos.logback:logback-classic:1.2.10")
-//    testImplementation("com.google.guava:guava-testlib:31.0.1-jre")
 }
 
 tasks {
