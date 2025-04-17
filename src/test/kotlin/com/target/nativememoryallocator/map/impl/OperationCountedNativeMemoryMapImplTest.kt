@@ -68,4 +68,50 @@ class OperationCountedNativeMemoryMapImplTest {
         verify(exactly = 1) { mockNativeMemoryMap.put(key = 1, value = null) }
     }
 
+    @Test
+    fun `test test put freed buffer`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        every {
+            mockNativeMemoryMap.put(key = 1, value = null)
+        } returns NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER
+
+        val putResult = operationCountedNativeMemoryMapImpl.put(key = 1, value = null)
+
+        putResult shouldBe NativeMemoryMap.PutResult.FREED_CURRENT_BUFFER
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numPutsFreedBuffer = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.put(key = 1, value = null) }
+    }
+
+    @Test
+    fun `test put allocated new buffer`() {
+        val operationCountedNativeMemoryMapImpl = OperationCountedNativeMemoryMapImpl(
+            nativeMemoryMap = mockNativeMemoryMap,
+        )
+
+        val testValueObject = mockk<TestValueObject>()
+
+        every {
+            mockNativeMemoryMap.put(key = 1, value = testValueObject)
+        } returns NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        val putResult = operationCountedNativeMemoryMapImpl.put(key = 1, value = testValueObject)
+        putResult shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        operationCountedNativeMemoryMapImpl.operationCounters.counterValuesEqual(
+            OperationCountersImpl(
+                numPutsNewBuffer = AtomicLong(1),
+            )
+        ) shouldBe true
+
+        verify(exactly = 1) { mockNativeMemoryMap.put(key = 1, value = testValueObject) }
+    }
+
 }
