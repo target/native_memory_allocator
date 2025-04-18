@@ -2,8 +2,12 @@ package com.target.nativememoryallocator.examples.map.onheap
 
 import com.target.nativememoryallocator.examples.map.utils.CacheObject
 import com.target.nativememoryallocator.examples.map.utils.buildRandomString
-import kotlinx.coroutines.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
 

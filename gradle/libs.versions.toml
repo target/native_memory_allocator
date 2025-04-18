@@ -4,11 +4,13 @@ guava = "33.4.8-jre"
 jupiter = "5.12.1"
 kotest = "5.9.1"
 kotlin-core = "2.1.0"
+kotlin-coroutines = "1.10.1"
 kotlin-logging = "7.0.6"
 logback = "1.5.18"
 micrometer-core = "1.14.6"
 mockk = "1.13.17"
 objenesis = "3.4"
+shadowjar = "8.3.6"
 
 [libraries]
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
@@ -25,7 +27,11 @@ kotest-assertions-core = { module = "io.kotest:kotest-assertions-core", version.
 kotest-assertions-json = { module = "io.kotest:kotest-assertions-json", version.ref = "kotest" }
 kotest-extensions = { module = "io.kotest:kotest-extensions", version.ref = "kotest" }
 kotest-property = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
+kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [bundles]
 testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "logback-classic", "mockk"]
+
+[plugins]
+shadow = { id = "com.gradleup.shadow", version.ref = "shadowjar" }
