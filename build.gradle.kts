@@ -31,7 +31,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(libs.kotlinlogging)
     implementation(libs.objnesis)
     implementation(libs.micrometer.core)
