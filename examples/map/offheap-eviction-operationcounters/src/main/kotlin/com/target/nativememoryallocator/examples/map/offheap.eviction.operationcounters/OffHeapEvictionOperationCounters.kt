@@ -6,8 +6,12 @@ import com.target.nativememoryallocator.examples.map.utils.CacheObjectSerializer
 import com.target.nativememoryallocator.examples.map.utils.buildRandomString
 import com.target.nativememoryallocator.map.NativeMemoryMapBackend
 import com.target.nativememoryallocator.map.NativeMemoryMapBuilder
-import kotlinx.coroutines.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 private val logger = KotlinLogging.logger {}
