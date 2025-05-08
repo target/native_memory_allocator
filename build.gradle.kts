@@ -10,16 +10,6 @@ plugins {
 //    `maven-publish`
 }
 
-// Conditionally enable dokka only when dokkaEnabled=true property is set.
-// Latest version 1.6.10 depends on vulnerable versions of jackson/jsoup/etc.
-// TODO reenable dokka
-//val dokkaEnabled = (project.properties["dokkaEnabled"]?.toString()?.toBoolean()) ?: false
-//project.logger.lifecycle("dokkaEnabled = $dokkaEnabled")
-//
-//if (dokkaEnabled) {
-//    apply(plugin = "org.jetbrains.dokka")
-//}
-
 val jvmTargetVersion: String by project
 
 group = "com.target"
@@ -40,16 +30,15 @@ dependencies {
 }
 
 tasks {
-    java { toolchain { languageVersion.set(JavaLanguageVersion.of(jvmTargetVersion)) } }
+    java {
+        withSourcesJar()
+        toolchain { languageVersion.set(JavaLanguageVersion.of(jvmTargetVersion)) }
+    }
 
     withType<Test> {
         useJUnitPlatform()
     }
 }
-
-//java {
-//    withSourcesJar()
-//}
 
 //publishing {
 //    repositories {
