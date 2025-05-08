@@ -9,5 +9,5 @@ include(
     "examples:map:offheap",
     "examples:map:offheap-eviction",
     "examples:map:offheap-eviction-operationcounters",
-//    "examples:map:offheap-flatbuffers",
+    "examples:map:offheap-flatbuffers",
 )

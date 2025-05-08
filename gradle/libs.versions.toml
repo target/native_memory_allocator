@@ -1,5 +1,6 @@
 [versions]
 caffeine = "3.2.0"
+flatbuffers = "25.2.10"
 guava = "33.4.8-jre"
 jupiter = "5.12.1"
 kotest = "5.9.1"
@@ -14,6 +15,7 @@ shadowjar = "8.3.6"
 
 [libraries]
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+flatbuffers-java = { module = "com.google.flatbuffers:flatbuffers-java", version.ref = "flatbuffers" }
 kotest-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
 kotlinlogging = { module = "io.github.oshai:kotlin-logging", version.ref = "kotlin-logging" }
 guava-testlib = { module = "com.google.guava:guava-testlib", version.ref = "guava" }
