@@ -3,8 +3,15 @@ package com.target.nativememoryallocator.benchmarks
 import com.target.nativememoryallocator.benchmarks.impl.NMAOffHeapCache
 import com.target.nativememoryallocator.benchmarks.impl.RocksDBOffHeapCache
 import com.target.nativememoryallocator.benchmarks.impl.UnimplementedOffHeapCache
-import mu.KotlinLogging
-import org.openjdk.jmh.annotations.*
+import io.github.oshai.kotlinlogging.KotlinLogging
+import org.openjdk.jmh.annotations.Benchmark
+import org.openjdk.jmh.annotations.Group
+import org.openjdk.jmh.annotations.GroupThreads
+import org.openjdk.jmh.annotations.Param
+import org.openjdk.jmh.annotations.Scope
+import org.openjdk.jmh.annotations.Setup
+import org.openjdk.jmh.annotations.State
+import org.openjdk.jmh.annotations.TearDown
 import java.nio.ByteBuffer
 
 private val logger = KotlinLogging.logger {}

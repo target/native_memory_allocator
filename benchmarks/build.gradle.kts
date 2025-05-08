@@ -1,6 +1,7 @@
 plugins {
-    kotlin("jvm")
-    id("me.champeau.jmh") version "0.6.8"
+    kotlin("jvm") version libs.versions.kotlin.core
+    alias(libs.plugins.jmh)
+
 }
 
 repositories {
@@ -9,10 +10,10 @@ repositories {
 
 dependencies {
     implementation(rootProject)
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
-    implementation("org.rocksdb:rocksdbjni:7.9.2")
-    implementation("org.openjdk.jmh:jmh-core:1.35")
+    implementation(libs.kotlinlogging)
+    implementation(libs.logback.classic)
+    implementation(libs.rocksdb.jni)
+    implementation(libs.jmh.core)
 }
 
 jmh {

@@ -12,6 +12,9 @@ micrometer-core = "1.14.6"
 mockk = "1.14.2"
 objenesis = "3.4"
 shadowjar = "8.3.6"
+rocksdb = "10.0.1"
+jmh = "1.37"
+jmh-gradle = "0.7.3"
 
 [libraries]
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
@@ -31,9 +34,12 @@ kotest-extensions = { module = "io.kotest:kotest-extensions", version.ref = "kot
 kotest-property = { module = "io.kotest:kotest-property-jvm", version.ref = "kotest" }
 kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlin-coroutines" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+rocksdb-jni = { module = "org.rocksdb:rocksdbjni", version.ref = "rocksdb" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 
 [bundles]
 testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "logback-classic", "mockk"]
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadowjar" }
+jmh = { id = "me.champeau.jmh", version.ref = "jmh-gradle" }

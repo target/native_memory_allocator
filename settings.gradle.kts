@@ -1,7 +1,7 @@
 rootProject.name = "native_memory_allocator"
 
 include(
-//    "benchmarks",
+    "benchmarks",
     "examples",
     "examples:map",
     "examples:map:utils",
