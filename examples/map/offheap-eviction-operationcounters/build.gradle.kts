@@ -1,11 +1,10 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
-    kotlin("jvm")
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version libs.versions.kotlin.core
+    alias(libs.plugins.shadow)
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -14,15 +13,13 @@ dependencies {
 }
 
 tasks {
-    named<ShadowJar>("shadowJar") {
-        archiveBaseName.set("offheap-eviction-operationcounters-shadowjar")
+    shadowJar {
+        archiveBaseName.set("onheap-shadowjar")
         manifest {
             attributes(mapOf("Main-Class" to "com.target.nativememoryallocator.examples.map.offheap.eviction.operationcounters.OffHeapEvictionOperationCountersKt"))
         }
     }
-}
 
-tasks {
     build {
         dependsOn(shadowJar)
     }

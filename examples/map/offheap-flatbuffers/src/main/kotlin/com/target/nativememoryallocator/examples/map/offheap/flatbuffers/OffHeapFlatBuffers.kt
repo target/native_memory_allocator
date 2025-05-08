@@ -7,8 +7,8 @@ import com.target.nativememoryallocator.examples.map.offheap.flatbuffers.seriali
 import com.target.nativememoryallocator.examples.map.utils.buildRandomString
 import com.target.nativememoryallocator.map.NativeMemoryMapBackend
 import com.target.nativememoryallocator.map.NativeMemoryMapBuilder
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.*
-import mu.KotlinLogging
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
 

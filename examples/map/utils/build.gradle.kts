@@ -1,14 +1,15 @@
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version libs.versions.kotlin.core
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
     api(rootProject)
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.1")
-    api("io.github.microutils:kotlin-logging:2.1.21")
-    api("ch.qos.logback:logback-classic:1.2.11")
+    api(libs.kotlin.coroutines)
+    api(libs.kotlinlogging)
+    api(libs.logback.classic)
 }

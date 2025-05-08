@@ -1,12 +1,17 @@
 package com.target.nativememoryallocator.map.impl
 
-import com.github.benmanes.caffeine.cache.*
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.benmanes.caffeine.cache.RemovalCause
+import com.github.benmanes.caffeine.cache.RemovalListener
+import com.github.benmanes.caffeine.cache.Scheduler
+import com.github.benmanes.caffeine.cache.Ticker
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.map.CaffeineConfigBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMap
 import com.target.nativememoryallocator.map.NativeMemoryMapStats
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
@@ -46,7 +51,7 @@ internal class CaffeineConfigBuilderImpl(
  *
  * @param nativeMemoryAllocator used to freeing value storage buffers.
  */
-internal class CaffeineEvictionListener<KEY_TYPE>(
+internal class CaffeineEvictionListener<KEY_TYPE : Any>(
     private val nativeMemoryAllocator: NativeMemoryAllocator,
 ) : RemovalListener<KEY_TYPE, NativeMemoryBuffer> {
 
@@ -57,9 +62,9 @@ internal class CaffeineEvictionListener<KEY_TYPE>(
      * @param value [NativeMemoryBuffer] object
      * @param cause [RemovalCause] object
      */
-    override fun onRemoval(key: KEY_TYPE?, value: NativeMemoryBuffer?, cause: RemovalCause?) {
+    override fun onRemoval(key: KEY_TYPE?, value: NativeMemoryBuffer?, cause: RemovalCause) {
         try {
-            if ((cause?.wasEvicted() == true) && (value?.freed == false)) {
+            if (cause.wasEvicted() && (value?.freed == false)) {
                 nativeMemoryAllocator.freeNativeMemoryBuffer(value)
             }
         } catch (e: Exception) {
@@ -76,7 +81,7 @@ internal class CaffeineEvictionListener<KEY_TYPE>(
  * @param caffeineConfigFunction caffeine configuration function used for builder pattern.
  * @return [Cache] caffeine cache
  */
-internal fun <KEY_TYPE> buildCaffeineCache(
+internal fun <KEY_TYPE : Any> buildCaffeineCache(
     nativeMemoryAllocator: NativeMemoryAllocator,
     caffeineConfigFunction: (CaffeineConfigBuilder) -> Unit,
 ): Cache<KEY_TYPE, NativeMemoryBuffer> {
