@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     implementation(rootProject)
-    implementation(libs.kotlinlogging)
+    implementation(libs.kotlin.logging)
     implementation(libs.logback.classic)
     implementation(libs.rocksdb.jni)
     implementation(libs.jmh.core)

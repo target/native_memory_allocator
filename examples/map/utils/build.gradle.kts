@@ -10,6 +10,6 @@ repositories {
 dependencies {
     api(rootProject)
     api(libs.kotlin.coroutines)
-    api(libs.kotlinlogging)
+    api(libs.kotlin.logging)
     api(libs.logback.classic)
 }

@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.kotlinlogging)
+    implementation(libs.kotlin.logging)
     implementation(libs.objnesis)
     implementation(libs.micrometer.core)
     api(libs.caffeine)
