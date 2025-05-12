@@ -14,7 +14,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveBaseName.set("onheap-shadowjar")
+        archiveBaseName.set("offheap-shadowjar")
         manifest {
             attributes(mapOf("Main-Class" to "com.target.nativememoryallocator.examples.map.offheap.OffHeapKt"))
         }
