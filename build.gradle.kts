@@ -7,7 +7,7 @@ buildscript {
 
 plugins {
     kotlin("jvm") version libs.versions.kotlin.core
-//    `maven-publish`
+    `maven-publish`
 }
 
 val jvmTargetVersion: String by project
@@ -40,20 +40,20 @@ tasks {
     }
 }
 
-//publishing {
-//    repositories {
-//        maven {
-//            name = "GitHubPackages"
-//            url = uri("https://maven.pkg.github.com/target/native_memory_allocator")
-//            credentials {
-//                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-//                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-//            }
-//        }
-//    }
-//    publications {
-//        register<MavenPublication>("gpr") {
-//            from(components["java"])
-//        }
-//    }
-//}
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/target/native_memory_allocator")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
+}
