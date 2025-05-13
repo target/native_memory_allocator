@@ -1,8 +1,5 @@
 # configuration options available at https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
-# This configuration implements every package-ecosystem entry with the following logic:
-# - only manage direct dependencies, as opposed to transient dependencies which are harder to maintain at scale
-
 version: 2
 updates:
   - package-ecosystem: "github-actions"
@@ -10,11 +7,11 @@ updates:
     schedule:
       interval: "daily"
     allow:
-      - dependency-type: "direct"
+      - dependency-type: "all"
 
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "daily"
     allow:
-      - dependency-type: "direct"
+      - dependency-type: "all"
