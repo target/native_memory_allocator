@@ -2,7 +2,7 @@
 
 # main library dependencies
 caffeine = "3.2.2"
-kotlin-core = "2.1.20"
+kotlin = "2.1.20"
 kotlin-logging = "7.0.7"
 micrometer-core = "1.15.2"
 objenesis = "3.4"
@@ -49,5 +49,6 @@ rocksdb-jni = { module = "org.rocksdb:rocksdbjni", version.ref = "rocksdb" }
 testing = ["guava-testlib", "jupiter-api", "jupiter-engine", "jupiter-params", "kotest-assertions-core", "kotest-junit5", "kotest-property", "kotest-assertions-json", "kotest-extensions", "logback-classic", "mockk"]
 
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadowjar" }
 jmh = { id = "me.champeau.jmh", version.ref = "jmh-gradle" }

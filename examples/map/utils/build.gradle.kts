@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version libs.versions.kotlin.core
+    alias(libs.plugins.kotlin.jvm)
 }
 
 repositories {
