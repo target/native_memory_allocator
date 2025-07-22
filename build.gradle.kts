@@ -51,8 +51,8 @@ publishing {
     repositories {
         maven {
             credentials(PasswordCredentials::class)
-            name =
-                "sonatype" // correlates with the environment variable set in the github action release.yml publish job
+            name = "sonatype" // correlates with the environment variable set in the github action release.yml publish job
+
             val releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
             val snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
             setUrl(if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl)

@@ -21,7 +21,7 @@ jobs:
       - name: Set Release Version as an environment variable
         run: echo "PUBLISH_VERSION=$(echo ${{ github.event.release.tag_name }})" >> $GITHUB_ENV
       - name: Publish package
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
           arguments: -Pversion=${{ env.PUBLISH_VERSION }} publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
