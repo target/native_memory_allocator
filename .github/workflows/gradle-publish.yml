@@ -23,7 +23,7 @@ jobs:
       - name: Publish package
         uses: gradle/gradle-build-action@ac2d340dc04d9e1113182899e983b5400c17cda1
         with:
-          arguments: -Pversion=${{ env.PUBLISH_VERSION }} --info --stacktrace publishToSonatype closeAndReleaseSonatypeStagingRepository
+          arguments: -Pversion=${{ env.PUBLISH_VERSION }} publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
