@@ -1,31 +1,19 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url = uri("https://plugins.gradle.org/m2/") }
     }
 }
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    `maven-publish`
-    jacoco
-    id("org.jetbrains.dokka") version "1.6.10" apply false
+    alias(libs.plugins.kotlin.jvm)
+//    `maven-publish`
 }
 
-// Conditionally enable dokka only when dokkaEnabled=true property is set.
-// Latest version 1.6.10 depends on vulnerable versions of jackson/jsoup/etc.
-val dokkaEnabled = (project.properties["dokkaEnabled"]?.toString()?.toBoolean()) ?: false
-project.logger.lifecycle("dokkaEnabled = $dokkaEnabled")
-
-if (dokkaEnabled) {
-    apply(plugin = "org.jetbrains.dokka")
-}
+val jvmTargetVersion: String by project
 
 group = "com.target"
-java.sourceCompatibility = JavaVersion.VERSION_11
+java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenLocal()
@@ -33,62 +21,39 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
-    implementation("org.objenesis:objenesis:3.2")
-    implementation("io.micrometer:micrometer-core:1.8.1")
-    api("com.github.ben-manes.caffeine:caffeine:3.0.5")
+    implementation(libs.kotlin.logging)
+    implementation(libs.objnesis)
+    implementation(libs.micrometer.core)
+    api(libs.caffeine)
 
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.17")
-    testImplementation("org.spekframework.spek2:spek-runner-junit5:2.0.17")
-    testImplementation("io.mockk:mockk:1.12.2")
-    testImplementation(platform("org.junit:junit-bom:5.8.2"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testImplementation("ch.qos.logback:logback-classic:1.2.10")
-    testImplementation("com.google.guava:guava-testlib:31.0.1-jre")
+    testImplementation(rootProject.libs.bundles.testing)
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "11"
+tasks {
+    java {
+        withSourcesJar()
+        toolchain { languageVersion.set(JavaLanguageVersion.of(jvmTargetVersion)) }
+    }
+
+    withType<Test> {
+        useJUnitPlatform()
     }
 }
 
-tasks.withType<Test> {
-    useJUnitPlatform()
-}
-
-java {
-    withSourcesJar()
-}
-
-jacoco {
-    toolVersion = "0.8.7"
-}
-
-tasks.jacocoTestReport {
-    reports {
-        xml.isEnabled = true
-        csv.isEnabled = false
-        html.destination = file("${buildDir}/jacocoHtml")
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/target/native_memory_allocator")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-            }
-        }
-    }
-    publications {
-        register<MavenPublication>("gpr") {
-            from(components["java"])
-        }
-    }
-}
+//publishing {
+//    repositories {
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/target/native_memory_allocator")
+//            credentials {
+//                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+//                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+//            }
+//        }
+//    }
+//    publications {
+//        register<MavenPublication>("gpr") {
+//            from(components["java"])
+//        }
+//    }
+//}

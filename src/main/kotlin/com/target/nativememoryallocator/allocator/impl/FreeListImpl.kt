@@ -1,7 +1,7 @@
 package com.target.nativememoryallocator.allocator.impl
 
 import com.target.nativememoryallocator.unsafe.NativeMemoryPage
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 

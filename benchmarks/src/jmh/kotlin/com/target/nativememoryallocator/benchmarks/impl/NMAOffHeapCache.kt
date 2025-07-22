@@ -1,12 +1,12 @@
 package com.target.nativememoryallocator.benchmarks.impl
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
-import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.benchmarks.OffHeapCache
+import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.map.NativeMemoryMapBackend
 import com.target.nativememoryallocator.map.NativeMemoryMapBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMapSerializer
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.nio.ByteBuffer
 
 private val logger = KotlinLogging.logger {}

@@ -1,5 +1,5 @@
 jdk:
-  - openjdk11
+  - openjdk17
 install:
   - echo "Running install VERSION=$VERSION"
   - ./gradlew -Pgroup=com.github.target -Pversion=$VERSION clean assemble publishToMavenLocal

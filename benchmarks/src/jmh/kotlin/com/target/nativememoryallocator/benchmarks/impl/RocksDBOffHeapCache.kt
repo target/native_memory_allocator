@@ -1,7 +1,7 @@
 package com.target.nativememoryallocator.benchmarks.impl
 
 import com.target.nativememoryallocator.benchmarks.OffHeapCache
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.rocksdb.RocksDB
 import java.io.File
 import java.nio.ByteBuffer

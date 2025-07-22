@@ -1,22 +1,23 @@
-package com.target.nativememoryallocator.integrationtests
+package com.target.integrationtests
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMap
 import com.target.nativememoryallocator.map.NativeMemoryMapBackend
 import com.target.nativememoryallocator.map.NativeMemoryMapBuilder
 import com.target.nativememoryallocator.map.NativeMemoryMapStats
+import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNotBe
 import io.mockk.clearAllMocks
-import mu.KotlinLogging
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 
 private val logger = KotlinLogging.logger {}
 
 class ConcurrentHashMapScenario {
 
-    @BeforeEach
-    fun before() {
+    @AfterEach
+    fun afterEach() {
         clearAllMocks()
     }
 
@@ -36,28 +37,27 @@ class ConcurrentHashMapScenario {
         ).build()
 
         val putResult1 = nativeMemoryMap.put(1, TestCacheValue("1234"))
-        assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
+        putResult1 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
         val putResult2 = nativeMemoryMap.put(2, TestCacheValue("2345"))
-        assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult2)
+        putResult2 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
-        assertEquals(2, nativeMemoryMap.size)
-        assertEquals(NativeMemoryMapStats(), nativeMemoryMap.stats)
+        nativeMemoryMap.size shouldBe 2
+        nativeMemoryMap.stats shouldBe NativeMemoryMapStats()
 
         logger.info { "nativeMemoryMap.get(1) = ${nativeMemoryMap.get(1)}" }
         logger.info { "nativeMemoryMap.get(2) = ${nativeMemoryMap.get(2)}" }
 
-        assertEquals(TestCacheValue("1234"), nativeMemoryMap.get(1))
-        assertEquals(TestCacheValue("2345"), nativeMemoryMap.get(2))
+        nativeMemoryMap.get(1) shouldBe TestCacheValue("1234")
+        nativeMemoryMap.get(2) shouldBe TestCacheValue("2345")
 
         nativeMemoryMap.delete(1)
 
-        assertEquals(1, nativeMemoryMap.size)
-        assertEquals(null, nativeMemoryMap.get(1))
-        assertEquals(TestCacheValue("2345"), nativeMemoryMap.get(2))
+        nativeMemoryMap.size shouldBe 1
+        nativeMemoryMap.get(1) shouldBe null
+        nativeMemoryMap.get(2) shouldBe TestCacheValue("2345")
 
-        val operationCounters = nativeMemoryMap.operationCounters
-        assertNull(operationCounters)
+        nativeMemoryMap.operationCounters shouldBe null
     }
 
     @Test
@@ -77,35 +77,36 @@ class ConcurrentHashMapScenario {
         ).build()
 
         val putResult1 = nativeMemoryMap.put(1, TestCacheValue("1234"))
-        assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult1)
+        putResult1 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
         val putResult2 = nativeMemoryMap.put(2, TestCacheValue("2345"))
-        assertEquals(NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER, putResult2)
+        putResult2 shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
 
-        assertEquals(2, nativeMemoryMap.size)
-        assertEquals(NativeMemoryMapStats(), nativeMemoryMap.stats)
+        nativeMemoryMap.size shouldBe 2
+        nativeMemoryMap.stats shouldBe NativeMemoryMapStats()
 
         logger.info { "nativeMemoryMap.get(1) = ${nativeMemoryMap.get(1)}" }
         logger.info { "nativeMemoryMap.get(2) = ${nativeMemoryMap.get(2)}" }
 
-        assertEquals(TestCacheValue("1234"), nativeMemoryMap.get(1))
-        assertEquals(TestCacheValue("2345"), nativeMemoryMap.get(2))
+        nativeMemoryMap.get(1) shouldBe TestCacheValue("1234")
+        nativeMemoryMap.get(2) shouldBe TestCacheValue("2345")
 
-        assertTrue(nativeMemoryMap.delete(1))
+        nativeMemoryMap.delete(1) shouldBe true
 
-        assertEquals(1, nativeMemoryMap.size)
-        assertEquals(null, nativeMemoryMap.get(1))
-        assertEquals(TestCacheValue("2345"), nativeMemoryMap.get(2))
+        nativeMemoryMap.size shouldBe 1
+        nativeMemoryMap.get(1) shouldBe null
+        nativeMemoryMap.get(2) shouldBe TestCacheValue("2345")
 
         val operationCounters = nativeMemoryMap.operationCounters
-        assertNotNull(operationCounters)
-        assertEquals(0, operationCounters?.numPutsNoChange?.toLong())
-        assertEquals(0, operationCounters?.numPutsFreedBuffer?.toLong())
-        assertEquals(0, operationCounters?.numPutsReusedBuffer?.toLong())
-        assertEquals(2, operationCounters?.numPutsNewBuffer?.toLong())
-        assertEquals(1, operationCounters?.numDeletesFreedBuffer?.toLong())
-        assertEquals(0, operationCounters?.numDeletesNoChange?.toLong())
-        assertEquals(5, operationCounters?.numGetsNonNullValue?.toLong())
-        assertEquals(1, operationCounters?.numGetsNullValue?.toLong())
+        operationCounters shouldNotBe null
+
+        operationCounters?.numPutsNoChange?.toLong() shouldBe 0
+        operationCounters?.numPutsFreedBuffer?.toLong() shouldBe 0
+        operationCounters?.numPutsReusedBuffer?.toLong() shouldBe 0
+        operationCounters?.numPutsNewBuffer?.toLong() shouldBe 2
+        operationCounters?.numDeletesFreedBuffer?.toLong() shouldBe 1
+        operationCounters?.numDeletesNoChange?.toLong() shouldBe 0
+        operationCounters?.numGetsNonNullValue?.toLong() shouldBe 5
+        operationCounters?.numGetsNullValue?.toLong() shouldBe 1
     }
 }

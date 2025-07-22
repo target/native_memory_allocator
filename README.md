@@ -1,6 +1,12 @@
 # native_memory_allocator
 
-O(1) malloc for off-heap storage in Kotlin, and a NativeMemoryMap based on [Caffeine](https://github.com/ben-manes/caffeine) so you don't have to call it directly.
+O(1) malloc for off-heap storage in Kotlin, and a NativeMemoryMap based on [Caffeine](https://github.com/ben-manes/caffeine).
+
+## Java Version
+
+Project is built with Java 17.  Works at runtime with any Java >= 17.
+
+Used in production and regularly tested with Java 17 and 21 LTS versions.
 
 ## Motivation
 
