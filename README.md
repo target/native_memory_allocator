@@ -4,7 +4,7 @@ O(1) malloc for off-heap storage in Kotlin, and a NativeMemoryMap based on [Caff
 
 ## Java Version
 
-Project is built with Java 11.  Works at runtime with any Java >= 11.
+Project is built with Java 17.  Works at runtime with any Java >= 17.
 
 Used in production and regularly tested with Java 17 and 21 LTS versions.
 
