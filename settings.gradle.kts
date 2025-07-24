@@ -1,4 +1,4 @@
-rootProject.name = "native_memory_allocator"
+rootProject.name = "native-memory-allocator"
 
 include(
     "benchmarks",
