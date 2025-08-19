@@ -3,7 +3,7 @@
 # main library dependencies
 caffeine = "3.2.2"
 kotlin = "2.2.10"
-kotlin-logging = "7.0.12"
+kotlin-logging = "7.0.13"
 micrometer-core = "1.15.3"
 objenesis = "3.4"
 
