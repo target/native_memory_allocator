@@ -13,7 +13,7 @@ nexusPublishPlugin = "2.0.0"
 # examples dependencies
 flatbuffers = "25.2.10"
 kotlin-coroutines = "1.10.2"
-shadowjar = "9.2.1"
+shadowjar = "9.2.2"
 
 # test dependencies
 guava = "33.5.0-jre"
