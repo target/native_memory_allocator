@@ -4,7 +4,7 @@
 caffeine = "3.2.2"
 kotlin = "2.2.20"
 kotlin-logging = "7.0.13"
-micrometer-core = "1.15.4"
+micrometer-core = "1.15.5"
 objenesis = "3.4"
 
 # publishing dependencies
