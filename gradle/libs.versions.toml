@@ -1,7 +1,7 @@
 [versions]
 
 # main library dependencies
-caffeine = "3.2.2"
+caffeine = "3.2.3"
 kotlin = "2.2.21"
 kotlin-logging = "7.0.13"
 micrometer-core = "1.15.5"
