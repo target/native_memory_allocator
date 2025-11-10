@@ -7,7 +7,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.micrometer.core.instrument.Tags
 import java.util.function.ToDoubleFunction
 
-private fun <T> MeterRegistry.registerGauge(
+private fun <T : Any> MeterRegistry.registerGauge(
     name: String,
     gaugeObject: T,
     tags: Tags,
