@@ -17,7 +17,7 @@ shadowjar = "9.3.0"
 
 # test dependencies
 guava = "33.5.0-jre"
-jupiter = "6.0.1"
+jupiter = "6.0.2"
 kotest = "6.0.7"
 logback = "1.5.24"
 mockk = "1.14.7"
