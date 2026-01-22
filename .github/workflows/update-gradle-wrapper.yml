@@ -6,8 +6,9 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  update-gradle-wrapper:
-    runs-on: ubuntu-latest
+  - uses: actions/checkout@v6
+    with:
+      persist-credentials: false
 
     steps:
       - uses: actions/checkout@v6
