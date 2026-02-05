@@ -126,6 +126,20 @@ internal class NativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : Any>(
         }
     }
 
+    override fun getIntoOnHeapMemoryBuffer(key: KEY_TYPE, onHeapMemoryBuffer: OnHeapMemoryBuffer): Boolean {
+        var found = false
+
+        cacheMap.computeIfPresent(key) { _, currentBuffer ->
+            found = true
+
+            currentBuffer.copyToOnHeapMemoryBuffer(onHeapMemoryBuffer = onHeapMemoryBuffer)
+
+            currentBuffer
+        }
+
+        return found
+    }
+
     override val keys: Set<KEY_TYPE>
         get() = cacheMap.keys
 
