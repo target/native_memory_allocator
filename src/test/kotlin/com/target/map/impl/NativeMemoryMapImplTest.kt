@@ -1,6 +1,7 @@
 package com.target.map.impl
 
 import com.target.nativememoryallocator.allocator.NativeMemoryAllocator
+import com.target.nativememoryallocator.allocator.NativeMemoryAllocatorBuilder
 import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBufferFactory
@@ -279,6 +280,7 @@ class NativeMemoryMapImplTest {
         }
     }
 
+
     @Test
     fun `test put reuse buffer`() {
         val serializedValue1 = ByteArray(10)
@@ -441,4 +443,54 @@ class NativeMemoryMapImplTest {
             mockNativeMemoryAllocator.freeNativeMemoryBuffer(buffer = mockNativeMemoryBuffer)
         }
     }
+
+    @Test
+    fun `test put then getIntoOnHeapMemoryBuffer`() {
+
+        class NMAStringSerializer : NativeMemoryMapSerializer<String> {
+
+            override fun deserializeFromOnHeapMemoryBuffer(onHeapMemoryBuffer: OnHeapMemoryBuffer): String =
+                String(
+                    onHeapMemoryBuffer.array, 0, onHeapMemoryBuffer.getReadableBytes()
+                )
+
+            override fun serializeToByteArray(value: String): ByteArray = value.toByteArray()
+        }
+
+        clearAllMocks()
+
+        val nativeMemoryAllocator = NativeMemoryAllocatorBuilder(
+            pageSizeBytes = 1024,
+            nativeMemorySizeBytes = 16 * 1024 * 1024, // 16 MB
+        ).build()
+
+        val testValue = "hello world"
+
+        val nativeMemoryMap = NativeMemoryMapImpl(
+            valueSerializer = NMAStringSerializer(),
+            nativeMemoryAllocator = nativeMemoryAllocator,
+            useThreadLocalOnHeapReadBuffer = false,
+            threadLocalOnHeapReadBufferInitialCapacityBytes = (256 * 1024),
+            cacheMap = ConcurrentHashMap(),
+        )
+
+        val putResult = nativeMemoryMap.put(key = 1, value = testValue)
+        putResult shouldBe NativeMemoryMap.PutResult.ALLOCATED_NEW_BUFFER
+
+        val readOnHeapMemoryBuffer = OnHeapMemoryBufferFactory.newOnHeapMemoryBuffer(initialCapacityBytes = 1)
+
+        nativeMemoryMap.getIntoOnHeapMemoryBuffer(
+            key = 1,
+            onHeapMemoryBuffer = readOnHeapMemoryBuffer
+        ) shouldBe true
+
+        readOnHeapMemoryBuffer.getReadableBytes() shouldBe 11
+        String(readOnHeapMemoryBuffer.toTrimmedArray(), 0, readOnHeapMemoryBuffer.getReadableBytes()) shouldBe testValue
+
+        nativeMemoryMap.getIntoOnHeapMemoryBuffer(key = 2, onHeapMemoryBuffer = readOnHeapMemoryBuffer) shouldBe false
+
+        nativeMemoryMap.keys shouldBe setOf(1)
+        nativeMemoryMap.size shouldBe 1
+    }
+
 }

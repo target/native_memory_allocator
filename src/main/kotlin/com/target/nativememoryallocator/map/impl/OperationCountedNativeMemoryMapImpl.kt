@@ -1,5 +1,6 @@
 package com.target.nativememoryallocator.map.impl
 
+import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 import com.target.nativememoryallocator.map.NativeMemoryMap
 import com.target.nativememoryallocator.map.NativeMemoryMapOperationCounters
 import java.util.concurrent.atomic.AtomicLong
@@ -67,6 +68,23 @@ internal class OperationCountedNativeMemoryMapImpl<KEY_TYPE : Any, VALUE_TYPE : 
 
         operationCounters.apply {
             if (getResult != null) {
+                numGetsNonNullValue.incrementAndGet()
+            } else {
+                numGetsNullValue.incrementAndGet()
+            }
+        }
+
+        return getResult
+    }
+
+    /**
+     * Delegate to [NativeMemoryMap.getIntoOnHeapMemoryBuffer] and then update [operationCounters].
+     */
+    override fun getIntoOnHeapMemoryBuffer(key: KEY_TYPE, onHeapMemoryBuffer: OnHeapMemoryBuffer): Boolean {
+        val getResult = nativeMemoryMap.getIntoOnHeapMemoryBuffer(key = key, onHeapMemoryBuffer = onHeapMemoryBuffer)
+
+        operationCounters.apply {
+            if (getResult) {
                 numGetsNonNullValue.incrementAndGet()
             } else {
                 numGetsNullValue.incrementAndGet()

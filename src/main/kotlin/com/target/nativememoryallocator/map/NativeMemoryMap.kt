@@ -1,6 +1,7 @@
 package com.target.nativememoryallocator.map
 
 import com.github.benmanes.caffeine.cache.stats.CacheStats
+import com.target.nativememoryallocator.buffer.NativeMemoryBuffer
 import com.target.nativememoryallocator.buffer.NativeMemoryBufferMetadata
 import com.target.nativememoryallocator.buffer.OnHeapMemoryBuffer
 
@@ -85,6 +86,13 @@ interface NativeMemoryMap<KEY_TYPE : Any, VALUE_TYPE : Any> : BaseNativeMemoryMa
      * @return value or null if key is not present
      */
     fun get(key: KEY_TYPE): VALUE_TYPE?
+
+    /**
+     * Get a value from the map using the [key], copying the native memory contents into [onHeapMemoryBuffer].
+     *
+     * @return true if key was found and value copied into [onHeapMemoryBuffer], false otherwise.
+     */
+    fun getIntoOnHeapMemoryBuffer(key: KEY_TYPE, onHeapMemoryBuffer: OnHeapMemoryBuffer): Boolean
 
     /**
      * [Set] of [KEY_TYPE] for the map.
