@@ -25,7 +25,7 @@ mockk = "1.14.9"
 # benchmark dependencies
 jmh = "1.37"
 jmh-gradle = "0.7.3"
-rocksdb = "10.4.2"
+rocksdb = "10.5.1"
 
 [libraries]
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
