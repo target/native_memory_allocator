@@ -19,7 +19,7 @@ shadowjar = "9.4.3"
 guava = "33.6.0-jre"
 jupiter = "6.1.0"
 kotest = "6.2.1"
-logback = "1.5.36"
+logback = "1.5.37"
 mockk = "1.14.11"
 
 # benchmark dependencies
