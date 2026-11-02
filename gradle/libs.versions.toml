@@ -24,7 +24,7 @@ mockk = "1.14.11"
 
 # benchmark dependencies
 jmh = "1.37"
-jmh-gradle = "0.7.3"
+jmh-gradle = "0.7.4"
 rocksdb = "11.8.1"
 
 [libraries]
